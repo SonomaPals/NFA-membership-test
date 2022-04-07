@@ -1,20 +1,25 @@
-# regular-expression-NFA-membership-test
-input a regular expression,  outputs ‘yes’ if w is in L(R), ‘no’ else
+# Regular expression and NFA membership test
+### Input
+A regular expression <i>R</i>
 <br/>
+A string <i>w</i>
 <br/>
-*Task:*
+
+### Task
+<ol>
+  <li> Convert the regular expression R to an epsilon-NFA <i>M<sub>1</sub></i>. </li>
+  <li> Remove epsilon transitions to obtain epsilon-free NFA <i>M<sub>2</sub>.</i> </li>
+  <li> Test if the string w is accepted by the epsilon-free NFA <i>M<sub>3</sub>.</i> </li>
+  </ol>
+
+### Output
+
+True/false: Whether or not the string w is the in the language of the regular expression R, i.e. if w is in L(R).
 <br/>
-Implement a program that tests membership of a given string w in a regular expression R.
-Specifically, your program will take as input a regular expression (such as (a ∪ a.b)*.(a ∪ epsilon) and
-a string w = abaab, and outputs ‘yes’ if w is in L(R), ‘no’ else. Three steps are involved in
-solving this problem: 1) convert the regular expression to an epsilon-NFA 2) remove epsilon-moves and 3)
-Test if w is accepted by the epsilon-free NFA.
-<br/>
-<br/>
-**Programmed By:
-<br/>
+
+### Contributors
 Garret Mook
 <br/>
 Katie Pell
 <br/>
-Jorge Calderon**
+Jorge Calderon
