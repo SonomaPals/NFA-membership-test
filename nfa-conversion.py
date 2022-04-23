@@ -59,7 +59,7 @@ def main():
         for i in epsilon_closures[k]: # For every state in the epsilon closure of state 0
             for j in range(num_symbols): # For each of the symbols allowed
                 for item in myNFA.transition_table[i][j]: # For each item in the closure of this state on this input symbol
-                    newNFA.transition_table[i][j].append(item)
+                    newNFA.transition_table[i][j].append(item) # Add that element to the appropriate cell in the new transition table
 
 
     print(newNFA.transition_table)
