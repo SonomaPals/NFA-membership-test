@@ -23,3 +23,21 @@ Garret Mook
 Katie Pell
 <br/>
 Jorge Calderon
+
+
+
+
+
+
+
+### Individual file information
+## nfa-conversion.py
+# Input
+Transition table for epsilon-NFA
+Input string to be tested
+
+# Intermediate steps
+Converts epsilon-NFA to epsilon-free NFA, represented by a transition table
+
+# Output
+True if any of the final states are reachable from the start state on the input string, false otherwise
