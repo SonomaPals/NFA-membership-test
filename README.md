@@ -23,10 +23,3 @@ Garret Mook
 Katie Pell
 <br/>
 Jorge Calderon
-
-### Individual file information
-<b>nfa-conversion.py</b>
-<ul>
-  <li><em>Input</em>: Transition table for epsilon-NFA</li>
-  <li><em>Output</em>: Equivalent epsilon-free NFA, represented by a transition table</li>
-</ul>
