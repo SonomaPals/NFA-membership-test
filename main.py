@@ -1,8 +1,6 @@
 # Main file for CS 454 Final Project
 # Garret Mook, Katie Pell, Jorge Calderon
 # Spring 2022
-
-from re import I
 import outside.inside.knfa as knfa # Import Katie's knfa.py file --> uses convert_nfa function
 import outside.inside.parse as parse # Import Jorge's parse.py file --> uses parse function
 
@@ -11,10 +9,14 @@ def main():
     regex =  "(a+a.b)*.(a+E)"
     print(parse.parse(regex))
 
+
+    transition_table = [[[0], [], [0, 1, 2]], [[], [1], [1,2]], [[0], [1], [2]]] # Will use output of Garret's program - this is just test NFA
+
+
     # Current test code --> Uses example NFA
-    num_states = 3
-    num_symbols = 3 # Already includes epsilon
-    epsilon_NFA = knfa.NFA(num_states, num_symbols) # Constructor for empty transition table - filled in during conversion
+    num_states = len(transition_table) # Number of states
+    num_symbols = len(transition_table[0]) - 1 # Number of input symbols
+    epsilon_NFA = knfa.NFA(num_states, num_symbols + 1, transition_table) # Constructor for empty transition table - filled in during conversion
 
     # # Goal code --> template for when Garret outputs the transition table for the E-NFA
     # num_states = len(gtable) # Number of nested lists in gtable (number of states)
