@@ -98,5 +98,5 @@ def convert_nfa(eNFA):
     #             break
     #     clo = get_closure(curr_state, char_index, eFreeNFA) # Symbol number NOT index in string
     #     print(clo)
-    #     curr_state += 1 # THIS SHOULDN'T JUST BE INCREMENTING FOREVER --> Gets higher than # of states
+    #     curr_state += 1 # THIS SHOULDN'T JUST BE INCREMENTING FOREVER --> Gets higher than # of states!
          
