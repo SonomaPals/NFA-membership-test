@@ -25,13 +25,15 @@ class NFA():
                 empty_table[i].append([])
 
 
-        newNFA = NFA(self.num_states, self.num_symbols - 1, empty_table) # Create a new NFA with empty transition table
+        # transition_table = [[[4], [1], [0]], [[], [2], [1,3]], [[], [3], [2]], [[], [], [3]], [[5], [], [1, 2, 4]], [[3], [], [5]]] # 5 states, 2 input symbols + E
+
+        newNFA = NFA(self.num_states, self.num_symbols - 1, empty_table) # Create a new NFA with empty transition table # *** removed - 1 from symbols***
         for k in range(self.num_states): # For every state in the NFA
             for i in epsilon_closures[k]: # For every state in the epsilon closure of the current state
                 for j in range(self.num_symbols): # For each of the symbols allowed
                     for item in self.transition_table[i][j]: # For each item in the epsilon closure of this state on this input symbol
-                        if item not in newNFA.transition_table[i][j]:
-                            newNFA.transition_table[i][j].append(item) # Get only unique items, add to list
+                        if item not in newNFA.transition_table[k][j]:
+                            newNFA.transition_table[k][j].append(item) # Get only unique items, add to list
         return newNFA
 
 
