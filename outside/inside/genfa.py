@@ -1,9 +1,6 @@
 # Main file for CS 454 Final Project
 # Garret Mook, Katie Pell, Jorge Calderon
 # Spring 2022
-import random 
-import numpy as np
-from tabulate import tabulate
 class genfa:
     def __init__(self):
         self.newlist = []
