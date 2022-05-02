@@ -1,11 +1,8 @@
-# Main file for CS 454 Final Project
+# epsilonNFA file for CS 454 Final Project
 # Garret Mook, Katie Pell, Jorge Calderon
 # Spring 2022
 class genfa:
-    def __init__(self):
-        self.newlist = []
-        
-    def Parse_Input(self, s):
+    def __init__(self,s):
         self.newlist = list(s)
 
     def createTransitionTable(self,w,h,symbols):
@@ -43,11 +40,9 @@ class genfa:
         w, h = NumSymbols, numStates
         self.createTransitionTable(w,h,symbols)
             
-        
 def main():
     s = "((a+b).c)*" 
-    newobject = genfa()
-    newobject.Parse_Input(s)
+    newobject = genfa(s)
     newobject.checkForMid()
     return 0
 
