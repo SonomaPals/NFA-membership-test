@@ -18,6 +18,10 @@ class NFA():
         for state in self.transition_table:
             epsilon_closures.append(state[-1]) # The last input symbol in each state row is the epsilon closure
 
+        for i in range(len(epsilon_closures)):
+            if i not in epsilon_closures[i]:
+                epsilon_closures[i].append(i)
+
         empty_table = []
         for i in range(self.num_states):
             empty_table.append([])
