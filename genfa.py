@@ -11,6 +11,16 @@ class genfa:
     def Parse_Input(self, s):
         self.newlist = list(s)
 
+    def createTransitionTable(self,w,h,symbols):
+        transition_table = []
+        counter = 0
+        for x in range(h):
+            transition_table.append([x])
+        for b in range(h):
+            for i in range(len(symbols)+1): #adds a colums in each row. One for each symbols and one for epsilon
+                transition_table[b].insert(counter+1," ")
+        print(transition_table)   
+               
     def checkForMid(self):
         countNumOfParen = 0
         foundFirstClosed = False
@@ -33,9 +43,9 @@ class genfa:
                 symbols.append(inner[x])
         numStates = NumSymbols * 2 #2 States 
         w, h = NumSymbols, numStates
-        # a_2d_matrix = np.zeros((h,w))
-        # print(a_2d_matrix)
-
+        self.createTransitionTable(w,h,symbols)
+            
+        
 def main():
     s = "((a+b).c)*" 
     newobject = genfa()
