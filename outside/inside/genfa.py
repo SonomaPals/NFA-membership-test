@@ -1,13 +1,11 @@
 # Main file for CS 454 Final Project
 # Garret Mook, Katie Pell, Jorge Calderon
 # Spring 2022
-class genfa:
-    def __init__(self):
-        self.newlist = []
-        
-    def Parse_Input(self, s):
-        self.newlist = list(s)
 
+class genfa:
+    def __init__(self, s):
+        self.newlist = list(s)
+        
     def checkForMid(self):
         countNumOfParen = 0
         foundFirstClosed = False
@@ -24,8 +22,7 @@ class genfa:
 
 def main():
     s = "((a+b)c)*"
-    newobject = genfa()
-    newobject.Parse_Input(s)
+    newobject = genfa(s)
     newobject.checkForMid()
     return 0
 
