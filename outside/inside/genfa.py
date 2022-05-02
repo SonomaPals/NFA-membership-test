@@ -19,6 +19,7 @@ class genfa:
         for b in range(h):
             for i in range(len(symbols)+1): #adds a colums in each row. One for each symbols and one for epsilon
                 transition_table[b].insert(counter+1," ")
+        self.transition_table = transition_table
         print(transition_table)   
                
     def checkForMid(self):
