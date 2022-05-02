@@ -5,22 +5,21 @@
 import outside.inside.eFreeNFA as eFreeNFA # Import Katie's knfa.py file --> uses convert_nfa function
 import outside.inside.genfa as eNFA
 
-
 def main():
     # Example from: https://www.geeksforgeeks.org/conversion-of-epsilon-nfa-to-nfa/
-    
-
-    transition_table = [[[], [1], [2]],[[], [0], []],[[3], [4], []],[[2], [], []],[[2], [], []]]
-    goal = [[[3], [1,4]],[[], [0]],[[3], [4]],[[2], []],[[2], []]]
-
-    M1 = eNFA
+    # transition_table = [[[], [1], [2]],[[], [0], []],[[3], [4], []],[[2], [], []],[[2], [], []]]
+    # goal = [[[3], [1,4]],[[], [0]],[[3], [4]],[[2], []],[[2], []]]
+    s = "((a+b).c)*" 
+    M1 = eNFA.genfa(s) # Here is the empty eNFA -- attribute transition_table does not exist yet until the magic is done
+    # ** do some magic here to fill in the eNFA **
+    transition_table = M1.transition_table # ** resulting transitional table for the eNFA **
     M2 = eFreeNFA.eFreeNFA(len(transition_table), len(transition_table[0]) - 1, transition_table).remove_epsilons() # One extra symbol for epsilon
 
     for item in M2.transition_table:
         for thing in item:
             thing.sort()
     
-    print(M2.transition_table == goal)
+    print(transition_table)
 
 main()
 
