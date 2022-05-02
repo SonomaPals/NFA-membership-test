@@ -1,4 +1,4 @@
-# Main file for CS 454 Final Project
+# epsilonNFA file for CS 454 Final Project
 # Garret Mook, Katie Pell, Jorge Calderon
 # Spring 2022
 class genfa:
@@ -43,7 +43,6 @@ class genfa:
         w, h = NumSymbols, numStates
         self.createTransitionTable(w,h,symbols)
             
-        
 def main():
     s = "((a+b).c)*" 
     newobject = genfa()
