@@ -8,18 +8,19 @@ import outside.inside.genfa as eNFA
 
 def main():
     # Example from: https://www.geeksforgeeks.org/conversion-of-epsilon-nfa-to-nfa/
+    
+
     transition_table = [[[], [1], [2]],[[], [0], []],[[3], [4], []],[[2], [], []],[[2], [], []]]
-    num_states = len(transition_table)
-    num_symbols = len(transition_table[0]) - 1 # Don't count the epsilon column
+    goal = [[[3], [1,4]],[[], [0]],[[3], [4]],[[2], []],[[2], []]]
 
-    goal = [[[3], [1,4]],[[], [0]],[   [3], [4]],[[2], []],[[2], []]]
-    newNFA = eFreeNFA.eFreeNFA(num_states, num_symbols, transition_table).remove_epsilons() # One extra symbol for epsilon
+    M1 = eNFA
+    M2 = eFreeNFA.eFreeNFA(len(transition_table), len(transition_table[0]) - 1, transition_table).remove_epsilons() # One extra symbol for epsilon
 
-    for item in newNFA.transition_table:
+    for item in M2.transition_table:
         for thing in item:
             thing.sort()
     
-    print(newNFA.transition_table == goal)
+    print(M2.transition_table == goal)
 
 main()
 

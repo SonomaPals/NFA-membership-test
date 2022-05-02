@@ -1,4 +1,3 @@
-# Program to convert epsilon-NFA to epsilon-free NFA
 
 class eFreeNFA():
     def __init__(self, num_states, num_symbols, transition_table):
