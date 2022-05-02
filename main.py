@@ -24,25 +24,24 @@ def main():
     # Example from: https://www.geeksforgeeks.org/conversion-of-epsilon-nfa-to-nfa/
     transition_table = [
         [
-            [], [1], [0, 2]
+            [], [1], [2]
         ],
         [
-            [], [0], [1]
+            [], [0], []
         ],
         [
-            [3], [4], [2]
+            [3], [4], []
         ],
         [
-            [2], [], [3]
+            [2], [], []
         ],
         [
-            [2], [], [4]
+            [2], [], []
         ]
     ]
     num_states = len(transition_table)
     num_symbols = len(transition_table[0]) - 1 # Don't count the epsilon column
 
-            
     goal = [
                 [
                     [3], [1,4]
