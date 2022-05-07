@@ -5,46 +5,60 @@
 import outside.inside.eFreeNFA as eFreeNFA # Import Katie's knfa.py file --> uses convert_nfa function
 import outside.inside.genfa as eNFA
 
+# for every character in the input
+# current state on this input gives --> _______
+
+def test2(string, nfa):
+  start = nfa.start_state
+  for char in string:
+    reachable = nfa.transition_table[start][char]
+
+
+
+
+def test(string, nfa):
+    current = [0]*len(nfa.transition_table) # number of states, each has a zero for now
+    starting_state = 0 # this can be initialized to be whatever state it needs to be...
+    current[starting_state] = 1 # mark the starting state as visit-able without even reading input
+    # input_string = "1100" # BUG: THIS REQUIRES THAT INPUTS BE THE ACTUAL CHARACTERS 0 AND 1 THEMSELVES.... HOPEFULLY CAN TRANSLATE LATER...
+
+    while string != "":
+      for i in range(len(current)): # for every state
+        if current[i]: # if it's marked with a 1 in the 'current' vector
+          reachable = nfa.transition_table[i][int(string[0])] # mark all states in the closure of [state][input symbol] as reachable
+          next = [0] * len(nfa.transition_table) # create 'next' vector
+          for i in reachable:
+            next[i] = 1 # mark those as reachable in the 'next' vector
+
+      string = string[1:]
+      current = next
+
+    for i in range(len(current)):
+      if current[i] == 1 and i in nfa.final_states:
+        return True
+
+    return False
+
+
 def main():
     # Example from: https://www.geeksforgeeks.org/conversion-of-epsilon-nfa-to-nfa/
-    # transition_table = [[[], [1], [2]],[[], [0], []],[[3], [4], []],[[2], [], []],[[2], [], []]]
+    transition_table = [[[], [1], [2]],[[], [0], []],[[3], [4], []],[[2], [], []],[[2], [], []]]
     # goal = [[[3], [1,4]],[[], [0]],[[3], [4]],[[2], []],[[2], []]]
-    s = "((a+b).c)*" 
-    M1 = eNFA.genfa(s) # Here is the empty eNFA -- attribute transition_table does not exist yet until the magic is done
-    # ** do some magic here to fill in the eNFA **
-    transition_table = M1.transition_table # ** resulting transitional table for the eNFA **
-    M2 = eFreeNFA.eFreeNFA(len(transition_table), len(transition_table[0]) - 1, transition_table).remove_epsilons() # One extra symbol for epsilon
 
-    for item in M2.transition_table:
-        for thing in item:
-            thing.sort()
-    
-    print(transition_table)
+    start_state = 0
+    final_states = [2]
+    num_states = len(transition_table)
+    symbols = ['a', 'b']
+
+    M2 = eFreeNFA.NFA(num_states, symbols, transition_table, start_state, final_states).remove_epsilons() # One extra symbol for epsilon
+
+    # print(goal)
+    # print(M2.transition_table)
+    # print(M2.final_states)
+
+    print(test("110", M2))
+
+
+
 
 main()
-
-
-# TESTING STRING MEMBERSHIP ~~ IDEAS
-
-  # # input_string = input("Enter a string to test: ")
-    # input_string = "ababa"
-    # # input_chars = input_string.split(" ") # Get each character individually
-    # input_chars = []
-    # for char in input_string:
-    #     if char not in input_chars:
-    #         input_chars.append(char)
-    # current = [0] * 4 # What is reachable from the current state?
-    # next = [0] * 4
-    # curr_state = 0 # Start at starting state
-    # char_index = 0
-
-    # for i in range(len(input_string)):
-    #     curr_char = input_string[i] # Get the current character in the input string
-    #     for j in range(len(input_chars)): # Find the corresponding number ID of that input character
-    #         if input_chars[j] == curr_char:
-    #             char_index = j
-    #             break
-    #     clo = get_closure(curr_state, char_index, eFreeNFA) # Symbol number NOT index in string
-    #     print(clo)
-    #     curr_state += 1 # THIS SHOULDN'T JUST BE INCREMENTING FOREVER --> Gets higher than # of states!
-         
