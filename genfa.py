@@ -20,6 +20,7 @@
 class genfa:
     def __init__(self,s):
         self.newlist = list(s)
+        self.lastParen = 0
 
     def populateTransitionTable(self):
         print(self.transition_table)
@@ -34,6 +35,18 @@ class genfa:
                 transition_table[b].insert(counter+1," ")
         self.transition_table = transition_table
         self.populateTransitionTable()
+    
+    def lastParenIndexFinder(self):
+        for x in range(len(self.newlist)):
+            for j in range(len(self.newlist)):
+                if (self.newlist[x] == ')'):
+                    if(self.newlist[j] != ')'):
+                        self.lastParen = x #found index of the last parentheses 
+        return self.lastParen
+                
+    def expressionTree(self):
+        self.lastParen
+    
     
     # def checkForMid(self):
     #     countNumOfParen = 0
@@ -59,7 +72,7 @@ class genfa:
     #     w, h = NumSymbols, numStates
     #     self.createTransitionTable(w,h,symbols)
         
-    def checkForMid(self):
+    def findSymbols(self):
         NumSymbols = 0
         symbols = []
         for x in range(len(self.newlist)):
@@ -73,7 +86,8 @@ class genfa:
 def main2():
     s = "((a+b).c)*" 
     newobject = genfa(s)
-    newobject.checkForMid()
+    newobject.findSymbols()
+    print(newobject.lastParenIndexFinder())
     return 0
 
 main2()
