@@ -34,27 +34,38 @@ class genfa:
                 transition_table[b].insert(counter+1," ")
         self.transition_table = transition_table
         self.populateTransitionTable()
+    
+    # def checkForMid(self):
+    #     countNumOfParen = 0
+    #     foundFirstClosed = False
+    #     for x in range(len(self.newlist)):
+    #         if (self.newlist[x] == '('):
+    #             countNumOfParen += 1
+    #         if (self.newlist[x] == ')' and foundFirstClosed == False):
+    #             foundFirstClosed = True
+    #             firstClosed = x
+    #         if (countNumOfParen > 1):
+    #             if (self.newlist[x] == '('):
+    #                 finalOpen = x + 1 # + 1 grabs the next index to get the char after the first opening (
+    #     inner = []
+    #     inner = self.newlist[finalOpen:firstClosed]
+    #     NumSymbols = 0
+    #     symbols = []
+    #     for x in range(len(inner)):
+    #         if inner[x] != '+':
+    #             NumSymbols += 1
+    #             symbols.append(inner[x])
+    #     numStates = NumSymbols * 2 #2 States 
+    #     w, h = NumSymbols, numStates
+    #     self.createTransitionTable(w,h,symbols)
         
     def checkForMid(self):
-        countNumOfParen = 0
-        foundFirstClosed = False
-        for x in range(len(self.newlist)):
-            if (self.newlist[x] == '('):
-                countNumOfParen += 1
-            if (self.newlist[x] == ')' and foundFirstClosed == False):
-                foundFirstClosed = True
-                firstClosed = x
-            if (countNumOfParen > 1):
-                if (self.newlist[x] == '('):
-                    finalOpen = x + 1 # + 1 grabs the next index to get the char after the first opening (
-        inner = []
-        inner = self.newlist[finalOpen:firstClosed]
         NumSymbols = 0
         symbols = []
-        for x in range(len(inner)):
-            if inner[x] != '+':
+        for x in range(len(self.newlist)):
+            if str(self.newlist[x]).isalnum():
+                symbols.append(self.newlist[x])
                 NumSymbols += 1
-                symbols.append(inner[x])
         numStates = NumSymbols * 2 #2 States 
         w, h = NumSymbols, numStates
         self.createTransitionTable(w,h,symbols)
