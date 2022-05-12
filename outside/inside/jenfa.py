@@ -12,7 +12,7 @@ class Exp_Tree:
         self.left = None
         self.right = None
 
-def print_tree(et):
+def print_tree(et): # et = expression tree 
     if et.type == Type.SYMBOL:
         # evaluate symbol: it is going to create a nfa for the symbol. ex. if symbol is a, then it will create a nfa for a. 
         print(et.value)
@@ -28,6 +28,7 @@ def print_tree(et):
         print_tree(et.left)
         print("*")
 
+
 def create_tree(regex_string):
     stack = []
     for char in regex_string:
@@ -35,9 +36,9 @@ def create_tree(regex_string):
             stack.append(Exp_Tree(Type.SYMBOL, char))
         else:
             if char == "+":
-                node = Exp_Tree(Type.UNION)
-                node.right = stack.pop()
-                node.left = stack.pop()
+                node = Exp_Tree(Type.UNION) # create a node parent with the type union '+'
+                node.right = stack.pop()    # whatever is in the stack, it gets pop and create a right node below the union symbol
+                node.left = stack.pop()     # whatever is in the stack, it gets pop and create a right node below the union symbol
             elif char == ".":
                 node = Exp_Tree(Type.CONCAT)
                 node.right = stack.pop()
@@ -45,8 +46,8 @@ def create_tree(regex_string):
             elif char == "*":
                 node = Exp_Tree(Type.STAR)
                 node.left = stack.pop()
-            stack.append(node)
-    return stack[0]
+            stack.append(node)              # appends the node into the stack: this includes the right and left node
+    return stack[0]  # return index 0 of the stack because that is the only index containing the whole expression tree
 
 # The regular-expression operator star has the highest precedence and is left associative.
 # The regular-expression operator concatenation has the next highest precedence and is left associative.
@@ -99,12 +100,13 @@ def prepare_regex(regex_string):
 
 #####################################################################
 def main():
-    input = "ab+c" 
+    input = "((a+b)c)*" 
     #input = "(a+b)(a+b)"
-    regex = prepare_regex(input) # return a postfix string
+    regex = prepare_regex(input) # return a postfix string. example: ab+c.*
     #print(regex)
     expression_Tree = create_tree(regex)
-    print_tree(expression_Tree)
+    #print_tree(expression_Tree)
+    #evaluate_exp_tree(expression_Tree)
     return 0
 
 main()
