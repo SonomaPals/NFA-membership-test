@@ -3,36 +3,7 @@
 # Spring 2022
 
 import outside.inside.eFreeNFA as eFreeNFA # Import Katie's knfa.py file --> uses convert_nfa function
-
-def get_num(nfa, char):
-  for i in range(len(nfa.symbols)):
-    if nfa.symbols[i] == char:
-      return i
-
-  return False
-
-def check_membership(nfa, string):
-    current = [nfa.start_state]
-
-    for idx in range(len(string)): # The string without the first character
-      input_char = get_num(nfa, string[idx])
-      # print(input_char)
-      next = []
-      for state in current:
-        # whats the closure of that state?
-        for item in nfa.transition_table[state][input_char]:
-          next.append(item)
-      
-      if len(next) == 0:
-        return False
-
-      current = next
-
-    for item in current:
-      if item in nfa.final_states:
-        return True
-      
-    return False
+import outside.inside.membership as member
 
 
 def main():
@@ -44,7 +15,8 @@ def main():
     start_state = 0
     final_states = [2]
     num_states = len(transition_table)
-    symbols = ['0', '1']
+    # symbols = ['0', '1']
+    symbols = ['a', 'b']
 
     M2 = eFreeNFA.NFA(num_states, symbols, transition_table, start_state, final_states).remove_epsilons() # One extra symbol for epsilon
 
@@ -53,7 +25,7 @@ def main():
     print(M2.transition_table)
     print(goal)
 
-    test5 = [
+    test5a = [
       "10101",
       "11111",
       "11101",
@@ -66,7 +38,20 @@ def main():
       "00000"
     ]
 
-    test6 = [
+    test5b = [
+      "babab",
+      "bbbbb",
+      "bbbab",
+      "baaba",
+      "babbb",
+      "babba",
+      "abaaa",
+      "aabab",
+      "ababb",
+      "aaaaa"
+    ]
+
+    test6a = [
       "101010",
       "111111",
       "100100",
@@ -79,21 +64,36 @@ def main():
       "000000"
     ]
 
-    for string in test5:
-      print(string, check(M2, string))
-    # print(check(M2, "01000"))
+    test6b = [
+      "bababa",
+      "bbbbbb",
+      "baabaa",
+      "bbaaba",
+      "babaab",
+      "aababa",
+      "ababaa",
+      "aaabba",
+      "aabbbb",
+      "aaaaaa"
+    ]
 
-    for string in test6:
-      print(string, check(M2, string))
 
 
+    for i in range(len(test5a)):
+      print(test5a[i], member.check(M2, test5a[i]), test5b[i], member.check(M2, test5b[i]))
 
+    for i in range(len(test6a)):
+      print(test6a[i], member.check(M2, test6a[i]), test6b[i], member.check(M2, test6b[i]))
+
+
+    # for string in test5a:
+    #   print(string, member.check(M2, string))
+
+    # for string in test6a:
+    #   print(string, member.check(M2, string))
 
 
 main()
 
-
-# 101010 incorrectly gives true (should be false)
-# 10101 incorrectly fives true (should be false)
 
 
