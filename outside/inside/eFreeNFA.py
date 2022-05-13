@@ -28,7 +28,7 @@ class NFA():
                 empty_table[i].append([])
                 
 
-        newNFA = NFA(self.num_states, self.symbols[:-1], empty_table, 0, self.final_states) # Create a new NFA with empty transition table # *** removed - 1 from symbols***
+        newNFA = NFA(self.num_states, self.symbols, empty_table, 0, self.final_states) # Create a new NFA with empty transition table # *** removed - 1 from symbols***
         for k in range(self.num_states): # For every state in the NFA
             for i in epsilon_closures[k]: # For every state in the epsilon closure of the current state
                 for j in range(self.num_symbols): # For each of the symbols allowed
@@ -45,8 +45,6 @@ class NFA():
         newNFA.final_states = set(newNFA.final_states)
 
         return newNFA
-
-
 
     def get_closure(self, state, col):
         return self.transition_table[state][col]
