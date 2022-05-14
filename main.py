@@ -12,20 +12,25 @@ def testing(nfa, list):
 
 
 def main():
-    # Example 1
-    # https://www.geeksforgeeks.org/conversion-of-epsilon-nfa-to-nfa/
-    transition_table = [[[], [1], [2]],[[], [0], []],[[3], [4], []],[[2], [], []],[[2], [], []]]
-    # goal = [[[3], [1,4]],[[], [0]],[[3], [4]],[[2], []],[[2], []]]
+    input_string = "a+b"
+    chars = []
+    for char in input_string:
+        if char.isalnum():
+            chars.append(char)
 
-    start_state = 0
-    final_states = [2]
-    num_states = len(transition_table)
-    # symbols = ['0', '1']
-    symbols1 = ['0', '1']
-    M2 = eFreeNFA.NFA(num_states, symbols1, transition_table, start_state, final_states).remove_epsilons() # One extra symbol for epsilon
-    symbols2 = ['a', 'b']
-    M3 = eFreeNFA.NFA(num_states, symbols2, transition_table, start_state, final_states).remove_epsilons() # One extra symbol for epsilon
+    transition_table = {
+        "q0": {"a": [], "b": ['q1'], "e": ['q2']},
+        "q1": {"a": [], "b": ['q0'], "e": []},
+        "q2": {"a": ['q3'], "b": ['q4'], "e": []},
+        "q3": {"a": ['q2'], "b": [], "e": []},
+        "q4": {"a": ['q2'], "b": [], "e": []},
+    }
 
+
+    M2 = eFreeNFA.NFA(2, chars, transition_table, "q0", ["q2"]).remove_epsilons()
+
+    for item in M2.transition_table:
+        print(item, M2.transition_table[item])
 
 
     # testing(M2, test6a)
@@ -33,8 +38,6 @@ def main():
 
 
 main()
-
-
 
     # test5a = [
     #   "10101",
