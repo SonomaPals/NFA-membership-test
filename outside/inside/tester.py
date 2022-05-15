@@ -57,28 +57,25 @@ def endOfTreeHelper(et):
         right[y] += [currentState+1]
         startingStatesList.append(currentState)
         finalStateList.append(currentState+1)
-        addEpsilon(currentState+2)
+        addEpsilon()
         #print(startingStatesList,finaleSateList)
         #print(Dict)
 
-def addEpsilon(NextState):
-    global nestedEpsilon
-    global curStartState 
+def addEpsilon():
+    global  nestedEpsilon
     nestedEpsilon = {}
     nestedEpsilon['e'] = []
-    Dict[NextState] = nestedEpsilon 
-    curStartState = NextState
+    Dict[len(Dict)] = nestedEpsilon 
     
 def unionTable(et):
     global newStartState
     global currentState
-    global curStartState 
     et.checked = 1
-    newStartState = (curStartState)
-    Dict[curStartState]['e'] += startingStatesList
+    newStartState = (len(Dict)-1)
+    Dict[len(Dict)-1]['e'] += startingStatesList
     while len(startingStatesList) != 0:
         startingStatesList.pop()
-    startingStatesList.append(curStartState)    
+    startingStatesList.append(len(Dict)-1)    
     #print(Dict)
 
 
@@ -97,26 +94,25 @@ def concatEpsilon(copyOfTree,FirstStateAdded,poppedList):
     setterForNextLevel()
     
 def concatTable(copyOfTree):
-    global w
     FirstStateAdded = 0
     newDict = {}
     newList = []
-    newList.append(w * 2)
+    newList.append(len(Dict) + 1)
     if copyOfTree.left.checked == 0:
         newDict[copyOfTree.left.value] = newList
-        Dict[(w * 2)-1] = newDict 
-        FirstStateAdded = w * 2 - 1
-        Dict[w * 2] = [] 
-        startingStatesList.append(w * 2)
+        Dict[len(Dict)] = newDict 
+        FirstStateAdded = len(Dict) - 1
+        Dict[len(Dict)] = [] 
+        startingStatesList.append(len(Dict))
     if copyOfTree.right.checked == 0:
         newDict[copyOfTree.right.value] = newList
-        Dict[(w * 2)-1] = newDict 
-        FirstStateAdded = (w * 2)-1
-        Dict[(w * 2)] = [] 
+        Dict[len(Dict)] = newDict 
+        FirstStateAdded = len(Dict) - 1
+        Dict[len(Dict)] = [] 
         poppedList = []
         while (len(finalStateList) != 0):
             poppedList.append(finalStateList.pop())
-        finalStateList.append((w * 2))
+        finalStateList.append(len(Dict)-1)
     concatEpsilon(copyOfTree,FirstStateAdded,poppedList)
     
 def kleeneStar(copyOfTree,finalStateList):
@@ -293,16 +289,18 @@ class genfa:
         self.newlist = list(s)
         self.lastParen = 0
 
-
+    def populateTransitionTable(self):
+        return 0
+    
     def createTransitionTable(self,w,h,symbols):
         global Dict
         Dict = {}
         for x in range(h):
             Dict[x] = {}
         for b in range(h):
-           # for i in range(len(symbols)+1): #adds a colums in each row. One for each symbols and one for epsilon
-            Dict[b] = {}
-
+            for i in range(len(symbols)+1): #adds a colums in each row. One for each symbols and one for epsilon
+                Dict[b] = {}
+        self.populateTransitionTable()
     
     def lastParenIndexFinder(self):
         for x in range(len(self.newlist)):
@@ -351,7 +349,7 @@ def main2():
     startingStatesList = []
     finalStateList = []
     
-    s = "((a+b)c)*" 
+    s = "a+b" 
     input = "((a+b)c)*" 
     newobject = genfa(s)
     newobject.findSymbols()
