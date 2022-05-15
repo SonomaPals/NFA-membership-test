@@ -31,6 +31,27 @@ class Exp_Tree:
         self.left = None
         self.right = None
         
+        
+def checkLeft(etLeft):
+    exists = 0
+    if not etLeft.left:
+        exists = 0
+    if etLeft.left:
+        exists = 1
+    return exists
+
+def expressionTreeOrder(et):
+    print("first node:")
+    print(et.value, et.type)
+    if checkLeft(et) == 1:
+        print("Something in left:")
+        print(et.left.value, et.left.type)
+        if checkLeft(et.left) == 0:
+            print(et.right.value, et.right.type)
+        expressionTreeOrder(et.left)
+    if not et.left:
+        print("empty")
+        
 
 def print_tree(et):
     if et.type == Type.SYMBOL:
@@ -126,17 +147,16 @@ class genfa:
         self.lastParen = 0
 
     def populateTransitionTable(self):
-        print(self.transition_table)
+        print(Dict)
     
     def createTransitionTable(self,w,h,symbols):
-        transition_table = []
-        counter = 0
+        global Dict
+        Dict = {}
         for x in range(h):
-            transition_table.append([x])
+            Dict[x] = {}
         for b in range(h):
             for i in range(len(symbols)+1): #adds a colums in each row. One for each symbols and one for epsilon
-                transition_table[b].insert(counter+1," ")
-        self.transition_table = transition_table
+                Dict[b] = {}
         self.populateTransitionTable()
     
     def lastParenIndexFinder(self):
@@ -171,6 +191,7 @@ class genfa:
                     return 0
 
 
+
 def main2():
     global regexListInOrder
     regexListInOrder = []
@@ -186,6 +207,8 @@ def main2():
     newobject.parse(regex)
     print(regexListInOrder)
     readTree(expression_Tree)
+    print("-------------")
+    expressionTreeOrder(expression_Tree)
     return 0
 
 main2()
