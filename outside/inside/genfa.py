@@ -31,7 +31,51 @@ class Exp_Tree:
         self.left = None
         self.right = None
         
-        
+def endOfTreeHelper(et): 
+        global currentState #Re-tell python to use global version
+        #----
+        #Side left
+        #----  
+        left = {}
+        transitionListleft = []
+        x = et.left.value #Will be key of nested dictionary
+        left[x] = transitionListleft #nestedDictionary
+        Dict[currentState] = left #inserting the dict 'a' into the dict
+        left[x] += [currentState+1]
+        startingStatesList.append(currentState)
+        finaleSateList.append(currentState+1)
+        #----
+        #Side right
+        #----
+        currentState = 2 + currentState 
+        right = {}
+        transitionListright = []
+        y = et.right.value
+        right[y] = transitionListright
+        Dict[currentState] = right #inserting the dict 'a' into the dict
+        right[y] += [currentState+1]
+        startingStatesList.append(currentState)
+        finaleSateList.append(currentState+1)
+        #print(startingStatesList,finaleSateList)
+        #print(Dict)
+
+def unionTable(et):
+    global currentState
+    union
+    Dict[len(Dict)] = 'e' #add epsilion to the final state
+    print(Dict)
+    
+def foundEndOfTree(et, Parentstype):
+    if (Parentstype == 2):
+        print("CONCAT")
+    if (Parentstype == 3): # type 3 = '+'
+        print("-------------")
+        print (et.left.value, et.right.value)
+        endOfTreeHelper(et)
+        unionTable(et)
+    if (Parentstype == 4):
+        print("STAR")
+          
 def checkLeft(etLeft):
     exists = 0
     if not etLeft.left:
@@ -47,10 +91,23 @@ def expressionTreeOrder(et):
         print("Something in left:")
         print(et.left.value, et.left.type)
         if checkLeft(et.left) == 0:
+            Parentstype = et.type
+            print("parent's type is: ", Parentstype)
+            print(et.right.value, et.right.type)
+            foundEndOfTree(et, Parentstype)
+        recusriveExpressionTreeOrder(et.left)
+    #if not et.left:
+        #print("empty")
+        
+def recusriveExpressionTreeOrder(et):
+    if checkLeft(et) == 1:
+        print("Something in left:")
+        print(et.left.value, et.left.type)
+        if checkLeft(et.left) == 0:
             print(et.right.value, et.right.type)
         expressionTreeOrder(et.left)
-    if not et.left:
-        print("empty")
+    # if not et.left:
+    #     print("empty")   
         
 
 def print_tree(et):
@@ -172,12 +229,14 @@ class genfa:
         
     def findSymbols(self):
         NumSymbols = 0
+        global symbols
         symbols = []
         for x in range(len(self.newlist)):
             if str(self.newlist[x]).isalnum():
                 symbols.append(self.newlist[x])
                 NumSymbols += 1
         numStates = NumSymbols * 2 #2 States 
+        global w,h
         w, h = NumSymbols, numStates
         self.createTransitionTable(w,h,symbols)
     
@@ -193,10 +252,17 @@ class genfa:
 
 
 def main2():
+    global currentState
+    global startingStatesList
     global regexListInOrder
+    global finaleSateList
     regexListInOrder = []
-    s = "((a+b)+(c+d))" 
-    input = "((a+b)c)*" 
+    currentState = 0
+    startingStatesList = []
+    finaleSateList = []
+    
+    s = "a+b" 
+    input = "a+b" 
     newobject = genfa(s)
     newobject.findSymbols()
     #print(newobject.lastParenIndexFinder())
