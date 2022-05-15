@@ -30,65 +30,135 @@ class Exp_Tree:
         self.value = value
         self.left = None
         self.right = None
+        self.checked = 0
         
 def endOfTreeHelper(et): 
         global currentState #Re-tell python to use global version
         #----
         #Side left
         #----  
-        print(Dict)
-        x = et.left.value #a
-        Dict[0]['a'] = 1
-        print(Dict)
-        # Dict[currentState] = left #inserting the dict 'a' into the dict
-        # left[x] += [currentState+1]
-        # startingStatesList.append(currentState)
-        # finaleSateList.append(currentState+1)
-        # #----
-        # #Side right
-        # #----
-        # currentState = 2 + currentState 
-        # right = {}
-        # transitionListright = []
-        # y = et.right.value
-        # right[y] = transitionListright
-        # Dict[currentState] = right #inserting the dict 'a' into the dict
-        # right[y] += [currentState+1]
-        # startingStatesList.append(currentState)
-        # finaleSateList.append(currentState+1)
-        # #print(startingStatesList,finaleSateList)
-        # #print(Dict)
-        # # for i in range(len(symbols)):
-        # #     Dict[i] = {}
-        # # print(Dict)
+        left = {}
+        transitionListleft = []
+        x = et.left.value #Will be key of nested dictionary
+        left[x] = transitionListleft #nestedDictionary
+        Dict[currentState] = left #inserting the dict 'a' into the dict
+        left[x] += [currentState+1]
+        startingStatesList.append(currentState)
+        finalStateList.append(currentState+1)
+        #----
+        #Side right
+        #----
+        currentState = 2 + currentState 
+        right = {}
+        transitionListright = []
+        y = et.right.value
+        right[y] = transitionListright
+        Dict[currentState] = right #inserting the dict 'a' into the dict
+        right[y] += [currentState+1]
+        startingStatesList.append(currentState)
+        finalStateList.append(currentState+1)
+        addEpsilon()
+        #print(startingStatesList,finaleSateList)
+        #print(Dict)
+
+def addEpsilon():
+    global  nestedEpsilon
+    nestedEpsilon = {}
+    nestedEpsilon['e'] = []
+    Dict[len(Dict)] = nestedEpsilon 
     
 def unionTable(et):
+    global newStartState
     global currentState
-    Dict[len(Dict)] = 'e' #add epsilion to the final state
+    et.checked = 1
+    newStartState = (len(Dict)-1)
+    Dict[len(Dict)-1]['e'] += startingStatesList
+    while len(startingStatesList) != 0:
+        startingStatesList.pop()
+    startingStatesList.append(len(Dict)-1)    
     #print(Dict)
+
+
+def concatEpsilon(copyOfTree,FirstStateAdded,poppedList):
+    #global expression_Tree_copy2
+    #Epsilon transition to the NEW start state from the previous FINAL states
+    copyOfTree.checked = 1 #Sets the concat to be CHECKED as completed
+    for x in poppedList:
+        if Dict[x] == {}:
+            nested = {}
+            nested['e'] = [FirstStateAdded]
+            Dict[x] = nested
+            
+    #checkNextTreeLevel(expression_Tree_copy2)
+    #print(finaleSateList,FirstStateAdded)
+    setterForNextLevel()
     
-def populateDict():
-    global nestedDict
-    global h
-    nestedDict = {}
-    print("------POPULATE DICT----")
-    for symbol in symbols:
-        nestedDict[symbol] = []
-    nestedDict['e'] = []
-    for i in range(h):
-        Dict[i] = nestedDict
-    #print(Dict)
+def concatTable(copyOfTree):
+    FirstStateAdded = 0
+    newDict = {}
+    newList = []
+    newList.append(len(Dict) + 1)
+    if copyOfTree.left.checked == 0:
+        newDict[copyOfTree.left.value] = newList
+        Dict[len(Dict)] = newDict 
+        FirstStateAdded = len(Dict) - 1
+        Dict[len(Dict)] = [] 
+        startingStatesList.append(len(Dict))
+    if copyOfTree.right.checked == 0:
+        newDict[copyOfTree.right.value] = newList
+        Dict[len(Dict)] = newDict 
+        FirstStateAdded = len(Dict) - 1
+        Dict[len(Dict)] = [] 
+        poppedList = []
+        while (len(finalStateList) != 0):
+            poppedList.append(finalStateList.pop())
+        finalStateList.append(len(Dict)-1)
+    concatEpsilon(copyOfTree,FirstStateAdded,poppedList)
     
+def kleeneStar(copyOfTree,finalStateList):
+    global boolForKleene #QUICK FIX: Adding BOOLEAN so if (copyOfTree.type == 4) and (boolForKleene == 0): doesnt run TWICE
+    global officialStartState
+    officialStartState = 0
+    Dict[len(Dict)] = []
+    boolForKleene = 1
+    finalStateList.append(len(Dict)-1)
+    officialStartState = len(Dict) - 1
+    newDict = {}
+    newDict['e'] = officialStartState
+    Dict[finalStateList[0]] = newDict
+    newDict2 = {}
+    newDict2['e'] = startingStatesList[0]
+    Dict[officialStartState] = newDict2
+    #print(officialStartState) Start
+    #print(finalStateList) Final State
     
+def setterForNextLevel():
+    global expression_Tree_copy
+    copyOfTree = expression_Tree_copy
+    checkNextTreeLevel(copyOfTree)
+    
+def checkNextTreeLevel(copyOfTree):
+    global boolForKleene 
+    boolForKleene = 0
+    if copyOfTree.left.checked == 0:
+        checkNextTreeLevel(copyOfTree.left)
+    if copyOfTree.left.checked == 1: #Check if the child is the last thing done
+        if copyOfTree.type == 2:
+            concatTable(copyOfTree)
+        if (copyOfTree.type == 4) and (boolForKleene == 0):
+            kleeneStar(copyOfTree,finalStateList)
+        
+    
+
 def foundEndOfTree(et, Parentstype):
-    populateDict()
     if (Parentstype == 2):
         print("CONCAT")
     if (Parentstype == 3): # type 3 = '+'
-        print("-------------")
-        print (et.left.value, et.right.value)
+        #print("-------------")
+        #print (et.left.value, et.right.value)
         endOfTreeHelper(et)
         unionTable(et)
+        setterForNextLevel()
     if (Parentstype == 4):
         print("STAR")
           
@@ -101,15 +171,15 @@ def checkLeft(etLeft):
     return exists
 
 def expressionTreeOrder(et):
-    print("first node:")
-    print(et.value, et.type)
+    #print("first node:")
+    #print(et.value, et.type)
     if checkLeft(et) == 1:
-        print("Something in left:")
-        print(et.left.value, et.left.type)
-        if checkLeft(et.left) == 0:
+        #print("Something in left:")
+        #print(et.left.value, et.left.type)
+        if checkLeft(et.left) == 0: #Check if nothing is in the left of the left (check if end of tree)
             Parentstype = et.type
-            print("parent's type is: ", Parentstype)
-            print(et.right.value, et.right.type)
+            #print("parent's type is: ", Parentstype)
+            #print(et.right.value, et.right.type)
             foundEndOfTree(et, Parentstype)
         recusriveExpressionTreeOrder(et.left)
     #if not et.left:
@@ -117,10 +187,10 @@ def expressionTreeOrder(et):
         
 def recusriveExpressionTreeOrder(et):
     if checkLeft(et) == 1:
-        print("Something in left:")
-        print(et.left.value, et.left.type)
-        if checkLeft(et.left) == 0:
-            print(et.right.value, et.right.type)
+        #print("Something in left:")
+        #print(et.left.value, et.left.type)
+        #if checkLeft(et.left) == 0:
+            #print(et.right.value, et.right.type)
         expressionTreeOrder(et.left)
     # if not et.left:
     #     print("empty")   
@@ -220,7 +290,7 @@ class genfa:
         self.lastParen = 0
 
     def populateTransitionTable(self):
-        print(Dict)
+        return 0
     
     def createTransitionTable(self,w,h,symbols):
         global Dict
@@ -228,12 +298,8 @@ class genfa:
         for x in range(h):
             Dict[x] = {}
         for b in range(h):
-           # for i in range(len(symbols)+1): #adds a colums in each row. One for each symbols and one for epsilon
-            # nested = {}
-            # for symbol in symbols:
-            #     nested[symbol] = []
-            # print("nested")
-            Dict[b] = {}
+            for i in range(len(symbols)+1): #adds a colums in each row. One for each symbols and one for epsilon
+                Dict[b] = {}
         self.populateTransitionTable()
     
     def lastParenIndexFinder(self):
@@ -275,14 +341,16 @@ def main2():
     global currentState
     global startingStatesList
     global regexListInOrder
-    global finaleSateList
+    global finalStateList
+    global expression_Tree_copy
+    global expression_Tree_copy2
     regexListInOrder = []
     currentState = 0
     startingStatesList = []
-    finaleSateList = []
+    finalStateList = []
     
     s = "a+b" 
-    input = "a+b" 
+    input = "((a+b)c)*" 
     newobject = genfa(s)
     newobject.findSymbols()
     #print(newobject.lastParenIndexFinder())
@@ -291,10 +359,13 @@ def main2():
     expression_Tree = create_tree(regex)
     print_tree(expression_Tree)
     newobject.parse(regex)
-    print(regexListInOrder)
+    #print(regexListInOrder)
     readTree(expression_Tree)
-    print("-------------")
+    #print("-------------")
+    expression_Tree_copy = expression_Tree
+    expression_Tree_copy2 = expression_Tree
     expressionTreeOrder(expression_Tree)
+    print(Dict)
     return 0
 
 main2()
