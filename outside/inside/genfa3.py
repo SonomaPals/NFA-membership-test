@@ -18,6 +18,9 @@
 # epsilon transiton from the previous final state to the new state
 # (Note: New state becomes a final state and start state)
 
+from os import EX_TEMPFAIL
+
+
 class Type:
     SYMBOL = 1
     CONCAT = 2
@@ -133,30 +136,39 @@ def kleeneStar(copyOfTree,finalStateList):
     newDict2 = {}
     newDict2['e'] = startingStatesList[0]
     Dict[officialStartState] = newDict2
+    copyOfTree.checked = 1
     #print(officialStartState) Start
     #print(finalStateList) Final State
     
 def setterForNextLevel():
     global expression_Tree_copy
     copyOfTree = expression_Tree_copy
-    checkNextTreeLevel(copyOfTree)
+    if copyOfTree.left != None:
+        checkNextTreeLevel(copyOfTree)
     
 def checkNextTreeLevel(copyOfTree):
     global boolForKleene 
+    global w
     boolForKleene = 0
+    if w == 2:
+        if copyOfTree.type == 2:
+            foundEndOfTree(copyOfTree,copyOfTree.type)
+        if copyOfTree.type == 3:
+            foundEndOfTree(copyOfTree,copyOfTree.type)
+        if (copyOfTree.type == 4) and (boolForKleene == 0):
+            foundEndOfTree(copyOfTree, copyOfTree.type)
     if copyOfTree.left.checked == 0:
         checkNextTreeLevel(copyOfTree.left)
-    if copyOfTree.left.checked == 1: #Check if the child is the last thing done
+    if copyOfTree.left.checked == 1: #Check if the CHILD was completed 
         if copyOfTree.type == 2:
             concatTable(copyOfTree)
         if (copyOfTree.type == 4) and (boolForKleene == 0):
             kleeneStar(copyOfTree,finalStateList)
-        
-    
 
 def foundEndOfTree(et, Parentstype):
     if (Parentstype == 2):
         print("CONCAT")
+        concatTable(et)
     if (Parentstype == 3): # type 3 = '+'
         #print("-------------")
         #print (et.left.value, et.right.value)
@@ -165,10 +177,10 @@ def foundEndOfTree(et, Parentstype):
         setterForNextLevel()
     if (Parentstype == 4):
         print("STAR")
-          
+        kleeneStar(et,finalStateList)  
 def checkLeft(etLeft):
     exists = 0
-    if not etLeft.left:
+    if etLeft.left == None:
         exists = 0
     if etLeft.left:
         exists = 1
@@ -195,7 +207,8 @@ def recusriveExpressionTreeOrder(et):
         #print(et.left.value, et.left.type)
         #if checkLeft(et.left) == 0:
             #print(et.right.value, et.right.type)
-        expressionTreeOrder(et.left)
+       #expressionTreeOrder(et.left)
+       expressionTreeOrder(et)
     # if not et.left:
     #     print("empty")   
         
@@ -351,7 +364,7 @@ def main2():
     startingStatesList = []
     finalStateList = []
     
-    s = "((a+b)c)*" 
+    s = "((a+b)c)*"
     input = "((a+b)c)*" 
     newobject = genfa(s)
     newobject.findSymbols()
