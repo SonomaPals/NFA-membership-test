@@ -18,9 +18,6 @@
 # epsilon transiton from the previous final state to the new state
 # (Note: New state becomes a final state and start state)
 
-from os import EX_TEMPFAIL
-
-
 class Type:
     SYMBOL = 1
     CONCAT = 2
