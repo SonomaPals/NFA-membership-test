@@ -18,6 +18,9 @@
 # epsilon transiton from the previous final state to the new state
 # (Note: New state becomes a final state and start state)
 
+from calendar import c
+
+
 class Type:
     SYMBOL = 1
     CONCAT = 2
@@ -32,7 +35,7 @@ class Exp_Tree:
         self.right = None
         self.checked = 0
         
-def endOfTreeHelper(et): 
+def UnionEndOfTreeHelper(et): 
         global currentState #Re-tell python to use global version
         #----
         #Side left
@@ -74,11 +77,16 @@ def unionTable(et):
     global currentState
     global curStartState 
     et.checked = 1
-    newStartState = (curStartState)
-    Dict[curStartState]['e'] += startingStatesList
-    while len(startingStatesList) != 0:
-        startingStatesList.pop()
-    startingStatesList.append(curStartState)    
+    if et.left.checked == 0:
+        newStartState = (curStartState)
+        Dict[curStartState]['e'] += startingStatesList
+        while len(startingStatesList) != 0: #take previous start states off 
+            startingStatesList.pop()
+        startingStatesList.append(curStartState) #new state becomes start state
+    if et.left.checked == 1:
+        newList = []
+        newList.append((curStartState + 1))
+        Dict[startingStatesList[0]]['e'] += newList
     #print(Dict)
 
 
@@ -143,6 +151,12 @@ def setterForNextLevel():
     if copyOfTree.left.left != None:
         checkNextTreeLevel(copyOfTree)
     
+def nextNodeUp(copyOfTree,type):
+    if copyOfTree.left.checked == 1:
+        if copyOfTree.right.type == 1:
+            unionTable(copyOfTree)
+            unionAlreadyCheckedHelper(copyOfTree) #Comes after unionTable or start State will be changed
+
 def checkNextTreeLevel(copyOfTree):
     global boolForKleene 
     global w
@@ -161,7 +175,23 @@ def checkNextTreeLevel(copyOfTree):
             concatTable(copyOfTree)
         if (copyOfTree.type == 4) and (boolForKleene == 0):
             kleeneStar(copyOfTree,finalStateList)
+        if copyOfTree.type == 3:
+            nextNodeUp(copyOfTree,copyOfTree.type)
 
+def unionAlreadyCheckedHelper(et):
+    global curStartState
+    if et.right.checked == 0: #Check if dealing wiht a unchecked right side
+        if et.right.type == 1: #Check if dealing with one symbol in right subtree
+            nestedDict = {}
+            newList =  []
+            newList.append(w*2)
+            nestedDict[et.right.value] = newList
+            Dict[w+2] = nestedDict
+            et.checked = 1
+            Dict[len(Dict)] = []
+            curStartState = len(Dict)
+            #addEpsilon(w*2)
+            
 def foundEndOfTree(et, Parentstype):
     if (Parentstype == 2):
         print("CONCAT")
@@ -169,12 +199,16 @@ def foundEndOfTree(et, Parentstype):
     if (Parentstype == 3): # type 3 = '+'
         #print("-------------")
         #print (et.left.value, et.right.value)
-        endOfTreeHelper(et)
-        unionTable(et)
-        setterForNextLevel()
+        if et.left.checked == 1:
+            unionAlreadyCheckedHelper(et)
+        if et.checked == 0:
+            UnionEndOfTreeHelper(et)
+            unionTable(et)
+            setterForNextLevel()
     if (Parentstype == 4):
         print("STAR")
         kleeneStar(et,finalStateList)  
+
 def checkLeft(etLeft):
     exists = 0
     if etLeft.left == None:
@@ -361,8 +395,8 @@ def main2():
     startingStatesList = []
     finalStateList = []
     #((a+b)c)*
-    s = "(a+b+c)"
-    input = "(a+b+c)" 
+    s = "a+b"
+    input = "a+b" 
     newobject = genfa(s)
     newobject.findSymbols()
     #print(newobject.lastParenIndexFinder())
