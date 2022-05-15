@@ -364,8 +364,8 @@ def main2():
     startingStatesList = []
     finalStateList = []
     #((a+b)c)*
-    s = "(a+b+c)"
-    input = "(a+b+c)" 
+    s = "((a+b)c)*"
+    input = "((a+b)c)*" 
     newobject = genfa(s)
     newobject.findSymbols()
     #print(newobject.lastParenIndexFinder())
