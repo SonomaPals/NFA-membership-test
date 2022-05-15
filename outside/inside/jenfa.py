@@ -97,14 +97,18 @@ def prepare_regex(regex_string):
     return postfix(regex_string)
 
 
+    
+
 #####################################################################
 def main():
-    input = "ab+c" 
+    input = "((a+b)c)*" 
     #input = "(a+b)(a+b)"
     regex = prepare_regex(input) # return a postfix string
     #print(regex)
     expression_Tree = create_tree(regex)
     print_tree(expression_Tree)
+    print("-------------")
+    print(expression_Tree.left.value)
     return 0
 
 main()
