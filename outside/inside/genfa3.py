@@ -19,6 +19,7 @@
 # (Note: New state becomes a final state and start state)
 
 from calendar import c
+from hashlib import new
 
 
 class Type:
@@ -90,7 +91,7 @@ def unionTable(et):
     #print(Dict)
 
 
-def concatEpsilon(copyOfTree,FirstStateAdded,poppedList):
+def concatEpsilonToMultipleStartStates(copyOfTree,FirstStateAdded,poppedList):
     #global expression_Tree_copy2
     #Epsilon transition to the NEW start state from the previous FINAL states
     copyOfTree.checked = 1 #Sets the concat to be CHECKED as completed
@@ -125,7 +126,7 @@ def concatTable(copyOfTree):
         while (len(finalStateList) != 0):
             poppedList.append(finalStateList.pop())
         finalStateList.append((w * 2))
-    concatEpsilon(copyOfTree,FirstStateAdded,poppedList)
+    concatEpsilonToMultipleStartStates(copyOfTree,FirstStateAdded,poppedList)
     
 def kleeneStar(copyOfTree,finalStateList):
     global boolForKleene #QUICK FIX: Adding BOOLEAN so if (copyOfTree.type == 4) and (boolForKleene == 0): doesnt run TWICE
@@ -191,11 +192,48 @@ def unionAlreadyCheckedHelper(et):
             Dict[len(Dict)] = []
             curStartState = len(Dict)
             #addEpsilon(w*2)
-            
+
+def concatNoChildrenHelperEpsilon(copyOfTree,StartState): #Adding Epsilon for a tree with 1 parent node(CONCAT) and 2 children(SYMBOLS)
+    newList = []
+    nestedDict = {}
+    newList.append(StartState+2)
+    nestedDict['e'] = newList
+    Dict[StartState+1] = nestedDict
+    copyOfTree.checked = 1
+    
+
+def helperForConcatNoChildren(copyOfTree): #If in a concat tree with children as symbols
+    global w
+    StartState = 0
+    newDict = {}
+    newDict2 = {}
+    newList = []
+    newList2 = []
+    poppedList = []
+    newList.append(StartState+1)
+    if copyOfTree.left.checked == 0:
+        newDict[copyOfTree.left.value] = newList
+        Dict[StartState] = newDict 
+        FirstStateAdded = StartState - 1
+        startingStatesList.append(StartState)
+        startingStatesList.append(StartState+2)
+    if copyOfTree.right.checked == 0:
+        newList2.append(StartState+3)
+        newDict2[copyOfTree.right.value] = newList2
+        Dict[StartState+2] = newDict2
+        while (len(finalStateList) != 0):
+            poppedList.append(finalStateList.pop())
+        finalStateList.append(StartState+3)
+        startingStatesList.pop(StartState+1)
+    concatNoChildrenHelperEpsilon(copyOfTree,StartState)
+    
 def foundEndOfTree(et, Parentstype):
     if (Parentstype == 2):
-        print("CONCAT")
-        concatTable(et)
+        if (et.left.type == 1 and et.right.type == 1):   
+            helperForConcatNoChildren(et)
+        else:
+            print("concat")
+            concatTable(et)
     if (Parentstype == 3): # type 3 = '+'
         #print("-------------")
         #print (et.left.value, et.right.value)
@@ -395,8 +433,8 @@ def main2():
     startingStatesList = []
     finalStateList = []
     #((a+b)c)*
-    s = "a+b"
-    input = "a+b" 
+    input = "ab" 
+    s = input
     newobject = genfa(s)
     newobject.findSymbols()
     #print(newobject.lastParenIndexFinder())
