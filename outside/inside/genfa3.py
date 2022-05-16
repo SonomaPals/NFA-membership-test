@@ -21,6 +21,8 @@
 from calendar import c
 from hashlib import new
 
+from regex import E
+
 
 class Type:
     SYMBOL = 1
@@ -227,6 +229,32 @@ def helperForConcatNoChildren(copyOfTree): #If in a concat tree with children as
         startingStatesList.pop(StartState+1)
     concatNoChildrenHelperEpsilon(copyOfTree,StartState)
     
+def kleeneStarSingleHeleper(et):
+    startState = 0
+    finalStateList.append(startState+1)
+    if et.right == None:
+        #Put in a state for the single symbol
+        startingStatesList.append(startState)
+        nestedDict = {}
+        newList = []
+        newList.append(startingStatesList[0] + 1)
+        nestedDict[et.left.value] = newList
+        Dict[startState] = nestedDict
+        #Add New State for epsilon transition
+        nestedDict2 = {}
+        nestedDict2['e'] = startState
+        Dict[startState+2] = nestedDict2
+        #Add Epsilon from State old final State to new Start State
+        startState = startState + 2
+        nestedDict3 = {}
+        nestedDict3['e'] = startState
+        Dict[startState-1] = nestedDict3
+        finalStateList.append(startState+2) #Update Final State 
+        startingStatesList.pop(0) #Pop old starting State to the list
+        startingStatesList.append(startState) #Add new starting state to the list
+    # if et.left.type == 1 and et.right != None:
+    #     print("test")
+    
 def foundEndOfTree(et, Parentstype):
     if (Parentstype == 2):
         if (et.left.type == 1 and et.right.type == 1):   
@@ -244,8 +272,10 @@ def foundEndOfTree(et, Parentstype):
             unionTable(et)
             setterForNextLevel()
     if (Parentstype == 4):
-        print("STAR")
-        kleeneStar(et,finalStateList)  
+        if (et.right == None):
+            kleeneStarSingleHeleper(et)
+        else:
+            kleeneStar(et,finalStateList)  
 
 def checkLeft(etLeft):
     exists = 0
@@ -449,6 +479,7 @@ def main2():
     expression_Tree_copy = expression_Tree
     expression_Tree_copy2 = expression_Tree
     expressionTreeOrder(expression_Tree)
+    print("input is: ", input)
     print(Dict)
     return 0
 
