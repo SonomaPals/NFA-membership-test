@@ -131,20 +131,45 @@ def concatTable(copyOfTree):
     concatEpsilonToMultipleStartStates(copyOfTree,FirstStateAdded,poppedList)
     
 def kleeneStar(copyOfTree,finalStateList):
+    # Look into DYNAMICALLY CREATING LISTS python
     global boolForKleene #QUICK FIX: Adding BOOLEAN so if (copyOfTree.type == 4) and (boolForKleene == 0): doesnt run TWICE
     global officialStartState
-    officialStartState = 0
-    Dict[len(Dict)] = []
-    boolForKleene = 1
-    finalStateList.append(len(Dict)-1)
-    officialStartState = len(Dict) - 1
-    newDict = {}
-    newDict['e'] = officialStartState
-    Dict[finalStateList[0]] = newDict
-    newDict2 = {}
-    newDict2['e'] = startingStatesList[0]
-    Dict[officialStartState] = newDict2
-    copyOfTree.checked = 1
+    if (regexListInOrder[len(regexListInOrder)-1] == '*') and (copyOfTree.left != None) and (copyOfTree.left.type == 3): #(a+b+c)*
+        officialStartState = 0
+        Dict[len(Dict)] = []
+        boolForKleene = 1
+        finalStateList.append(len(Dict)-2)
+        officialStartState = len(Dict) - 1
+        newDict = {}
+        newDict['e'] = officialStartState
+        Dict[finalStateList[0]] = newDict
+        newDict2 = {}
+        newDict2['e'] = startingStatesList[0]
+        Dict[officialStartState] = newDict2
+        copyOfTree.checked = 1
+        oldFinal1 = finalStateList.pop() 
+        oldFinal2 = finalStateList.pop()
+        newDict3 = {}
+        newDict4 = {}
+        finalStateList.pop()
+        finalStateList.append(len(Dict)-1)
+        newDict3['e'] = finalStateList[0]
+        newDict4['e'] = finalStateList[0]
+        Dict[oldFinal1] = newDict3
+        Dict[oldFinal2] = newDict4
+    else:    #Plus sign never onto of concat or star #((a+b)c)*
+        officialStartState = 0
+        Dict[len(Dict)] = []
+        boolForKleene = 1
+        finalStateList.append(len(Dict)-1)
+        officialStartState = len(Dict) - 1
+        newDict = {}
+        newDict['e'] = officialStartState
+        Dict[finalStateList[0]] = newDict
+        newDict2 = {}
+        newDict2['e'] = startingStatesList[0]
+        Dict[officialStartState] = newDict2
+        copyOfTree.checked = 1
     #print(officialStartState) Start
     #print(finalStateList) Final State
     
@@ -462,8 +487,15 @@ def main2():
     currentState = 0
     startingStatesList = []
     finalStateList = []
+    #---------
+    # Working
+    #---------
     #((a+b)c)*
-    input = "ab" 
+    #a+b
+    #a+b+c
+    #a*
+    #(a+b+c)*
+    input = "(a+b+c)*" 
     s = input
     newobject = genfa(s)
     newobject.findSymbols()
