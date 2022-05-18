@@ -78,12 +78,3 @@ class NFA():
 
         return self
 
-    # def epsilon_to_epsilonFree(self, x): # start with an Epsilon NFA
-    #     M1 = NFA(x) # Create an NFA with epsilons
-    #     print(self.transition_table)
-    #     M2 = self.without_epsilons() # Remove all epsilon transitions from NFA
-    #     print(M2.transition_table)
-    #     M3 = M2.delete_states()
-    #     # delete_states(M2) # Delete
-    #     print()
-    #     print(M3.transition_table)

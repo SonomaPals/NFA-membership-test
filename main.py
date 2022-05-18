@@ -46,20 +46,17 @@ def test1():
 
 def regex_to_epsilonNFA(userInput):
     usrInput = "ab" # Get user input
-    x = reNFA.nfaInfo(reNFA.regexToNFA(usrInput)) # Returns (num states, symbols, transition table, start state, final state)
+    x = reNFA.nfaInfo(reNFA.regexToNFA(usrInput)) # G/J code to go from regex to epsilon-NFA --> returns tuple of NFA definition
     return efNFA.NFA(x) # Return the NFA object corresponding to this userInput
 
 def epsilonNFA_to_epsilonFreeNFA(M1):
-    mid = M1.without_epsilons()
-    mid = mid.delete_states()
+    mid = M1.without_epsilons() # Remove epsilon transitions
+    mid = mid.delete_states() # Remove any unnecessary states
     return mid
 
 def main():
     usrInput = "a+b"
     M1 = regex_to_epsilonNFA(usrInput)
-    # print(M1.transition_table)
     M2 = epsilonNFA_to_epsilonFreeNFA(M1)
-    # print(M2.transition_table)
-    # print()
 
 main()
