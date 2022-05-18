@@ -354,6 +354,12 @@ def checkIfParentHasSameType(expression_Tree_copy2):
     while (expression_Tree_copy2.left.left != x):
         if expression_Tree_copy2.left.type == 4:
             return 1
+# The regular-expression operator star has the highest precedence and is left associative.
+# The regular-expression operator concatenation has the next highest precedence and is left associative.
+# The regular-expression operator + has the lowest precedence and is left associative.
+def orderOfEval(a, b):
+    order = ["+", ".", "*"]
+    return order.index(a) > order.index(b)
         
 def foundEndOfTree(et, Parentstype):
     if (Parentstype == 2):
@@ -396,82 +402,53 @@ def recusriveExpressionTreeOrder(et):
        expressionTreeOrder(et)
 
 def creationOfExpressionTree(regex_string):
-    stack = []
+    containerExpressionTreeCreationList = []
     for char in regex_string:
         if char.isalnum():
-            stack.append(TreeThatExpressesItself(Classifiers.LETTER, char))
+            containerExpressionTreeCreationList.append(TreeThatExpressesItself(Classifiers.LETTER, char))
         else:
             if char == "+":
                 node = TreeThatExpressesItself(Classifiers.PLUSSIGN)
-                node.right = stack.pop()
-                node.left = stack.pop()
+                node.right = containerExpressionTreeCreationList.pop()
+                node.left = containerExpressionTreeCreationList.pop()
             elif char == ".":
                 node = TreeThatExpressesItself(Classifiers.PERIOD)
-                node.right = stack.pop()
-                node.left = stack.pop()
+                node.right = containerExpressionTreeCreationList.pop()
+                node.left = containerExpressionTreeCreationList.pop()
             elif char == "*":
                 node = TreeThatExpressesItself(Classifiers.STAR)
-                node.left = stack.pop()
-            stack.append(node)
-    return stack[0]
+                node.left = containerExpressionTreeCreationList.pop()
+            containerExpressionTreeCreationList.append(node)
+    return containerExpressionTreeCreationList[0]
 
-# The regular-expression operator star has the highest precedence and is left associative.
-# The regular-expression operator concatenation has the next highest precedence and is left associative.
-# The regular-expression operator + has the lowest precedence and is left associative.
-def orderOfEval(a, b):
-    order = ["+", ".", "*"]
-    return order.index(a) > order.index(b)
-
-# def orderEvalUsingPostFix(regex_list):
-#     container = []
-#     words = ""
-#     for char in regex_list:
-#         if char.isalnum():
-#             words += char
-#             continue
-#         if char == ")":
-#             while len(container) != 0 and container[-1] != "(":
-#                 words = words + container.pop()
-#             container.pop()
-#         elif char == "(":
-#             container.append(char)
-#         elif char == "*":
-#             words = words + char
-#         elif len(container) == 0 or container[-1] == "(" or orderOfEval(char, container[-1]):
-#             container.append(char)
-#         else:
-#             while len(container) != 0 and container[-1] != "(" and not orderOfEval(char, container[-1]):
-#                 words = words + container.pop()
-#             container.append(char)
-
-#     while len(container) != 0:
-#         words = words + container.pop()
-#     return words
 
 def orderEvalUsingPostFix(regex_list):
     container = []
+    zero = 0
     words = ""
     for char in regex_list:
         if char.isalnum():
             words += char
             continue
-        if char == ")":
-            while len(container) != 0 and container[-1] != "(":
+        if char == "(":
+            container.append(char)
+        elif char == ")":
+            container_len = len(container)
+            while container_len != zero and container[-1] != "(":
                 words += container.pop()
             container.pop()
-        elif char == "(":
+        elif len(container) == zero or container[-1] == "(" or orderOfEval(char, container[-1]):
             container.append(char)
         elif char == "*":
             words = words + char
-        elif len(container) == 0 or container[-1] == "(" or orderOfEval(char, container[-1]):
-            container.append(char)
         else:
-            while len(container) != 0 and container[-1] != "(" and not orderOfEval(char, container[-1]):
+            while len(container) != zero and container[-1] != "(" and not orderOfEval(char, container[-1]):
                 words = words + container.pop()
             container.append(char)
-
-    while len(container) != 0:
+    containerLength = len(container)
+    while containerLength != zero:
         words = words + container.pop()
+        containerLength = containerLength - 1
     return words
 
 
