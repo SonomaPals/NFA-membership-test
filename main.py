@@ -30,8 +30,8 @@ def test1():
 
     letters = ['a', 'b']
     nums = ['0', '1']
-    M2 = eFreeNFA.NFA([2, nums, transition_table_nums, 'q0', ['q2']]).remove_epsilons()
-    M3 = eFreeNFA.NFA([2, letters, transition_table_letters, 'q0', ['q2']]).remove_epsilons()
+    M2 = efNFA.NFA([2, nums, transition_table_nums, 'q0', ['q2']]).remove_epsilons()
+    M3 = efNFA.NFA([2, letters, transition_table_letters, 'q0', ['q2']]).remove_epsilons()
 
     test5a = ['10101', '11111', '11101', '10010', '10111', '10110', '01000', '00101', '01011', '00000']
     test5b = ['babab', 'bbbbb', 'bbbab', 'baaba', 'babbb', 'babba', 'abaaa', 'aabab', 'ababb', 'aaaaa']
@@ -45,8 +45,8 @@ def test1():
         print(test6a[i], M2.check_string(test6a[i]), "/", M3.check_string(test6b[i]), test6b[i])
 
 def regex_to_epsilonNFA(userInput):
-    usrInput = "ab" # Get user input
-    x = reNFA.nfaInfo(reNFA.regexToNFA(usrInput)) # G/J code to go from regex to epsilon-NFA --> returns tuple of NFA definition
+    # usrInput = "ab" # Get user input
+    x = reNFA.nfaInfo(reNFA.regexToNFA(userInput)) # G/J code to go from regex to epsilon-NFA --> returns tuple of NFA definition
     return efNFA.NFA(x) # Return the NFA object corresponding to this userInput
 
 def epsilonNFA_to_epsilonFreeNFA(M1):
@@ -55,8 +55,34 @@ def epsilonNFA_to_epsilonFreeNFA(M1):
     return mid
 
 def main():
-    usrInput = "a+b"
+    usrInput = "((a+b)c)*"
     M1 = regex_to_epsilonNFA(usrInput)
     M2 = epsilonNFA_to_epsilonFreeNFA(M1)
 
+    testA = ["bcacbcacbcacacacacbcbcbcbcacacbc", "acacbcacacacacacacbcbcbc", "acacacbc", "aaaabbbbc", "abc"] # First 3 should pass, last 2 should fail
+    for string in testA:
+        print(M2.check_string(string))
+
+
+    # python old.py "ab"
+    # python old.py "a+b"
+    # python old.py "((a+b)c)*"
+    # Should pass
+    # bcacbcacbcacacacacbcbcbcbcacacbc
+    # acacbcacacacacacacbcbcbc
+    # acacacbc
+    # Should fail
+    # aaaabbbbc
+    # abc
+
+    # python old.py "(ab)*"
+    # Should pass
+    # abababababababababab
+    # ababababab
+    # ab
+    # Should fail
+    # aaaaab
+    # bba
+
+    
 main()
