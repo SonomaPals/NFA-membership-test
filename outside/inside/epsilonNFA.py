@@ -536,7 +536,7 @@ class genfa:
                     return 0
 
 def transformTTable(Dict):
-    print(Dict)
+    # print(Dict)
     symbolsPlusEpsilon = symbols
     symbolsPlusEpsilon.append("e")
     for x in symbolsPlusEpsilon:
@@ -546,7 +546,7 @@ def transformTTable(Dict):
                 Dict[y][x] = []
     #print(printInfo(Dict))
 
-def main2(inp):
+def regexToNFA(inp):
     global currentState
     global startingStatesList
     global regexListInOrder
@@ -567,12 +567,13 @@ def main2(inp):
     expression_Tree_copy = expression_Tree
     expression_Tree_copy2 = expression_Tree
     expressionTreeOrder(expression_Tree)
-    print("input is: ", userInput)
+    # print("input is: ", userInput)
     transformTTable(Dict)
-    return 0
+    return Dict
+    # return 0
 
 #usrInput = "((a+b)c)*"
-usrInput = sys.argv[1]
-main2(usrInput)
+# usrInput = sys.argv[1]
+# main2(usrInput)
 
 

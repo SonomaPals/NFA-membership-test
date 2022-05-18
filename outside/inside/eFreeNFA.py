@@ -18,6 +18,16 @@ class NFA():
         self.start_state = original.start_state
         self.final_states  = original.final_states
 
+    def print(self):
+        print("number of states:", self.num_states)
+        print("symbols:", self.symbols)
+        print("transition_table: ", end="   ")
+        for item in self.transition_table:
+            print(item, self.transition_table[item])
+        # print(self.transition_table)
+        print("start state:", self.start_state)
+        print("final states:", self.final_states)
+        
     def without_epsilons(self):
         # newNFA = NFA(self.num_states, self.symbols, self.transition_table, self.start_state, self.final_states) # Create a new NFA with empty transition table # *** removed - 1 from symbols***
         newNFA = self
