@@ -1,16 +1,29 @@
 
 class NFA():
-    def __init__(self, num_states, symbols, transition_table, start, end):
-        self.num_states = num_states
-        self.num_symbols = len(symbols)
-        self.symbols = symbols
-        self.transition_table = transition_table
-        self.states = transition_table.keys()
-        self.start_state = start
-        self.final_states = end
+    def __init__(self, x):
+        self.num_states = x[0] #num_states
+        self.num_symbols = len(x[1]) #len(symbols)
+        self.symbols = x[1]
+        self.transition_table = x[2]
+        self.states = self.transition_table.keys()
+        self.start_state = x[3]
+        self.final_states = x[4]
 
-    def remove_epsilons(self):
-        newNFA = NFA(self.num_states, self.symbols, self.transition_table, self.start_state, self.final_states) # Create a new NFA with empty transition table # *** removed - 1 from symbols***
+    def copy(self, original):
+        self.num_states = original.num_states
+        self.num_symbols = original.num_symbols
+        self.symbols = original.symbols
+        self.transition_table = original.transition_table
+        self.states = original.states
+        self.start_state = original.start_state
+        self.final_states  = original.final_states
+
+    def without_epsilons(self):
+        # newNFA = NFA(self.num_states, self.symbols, self.transition_table, self.start_state, self.final_states) # Create a new NFA with empty transition table # *** removed - 1 from symbols***
+        newNFA = self
+        if 'e' not in newNFA.symbols:
+            return "This NFA does not contain epsilon."
+        newNFA.symbols.remove('e') # If it exists, remove epsilon
         for state in self.states: # For every state in the NFA
             for reach in self.transition_table[state]["e"]: # For every reachable state in that state's epsilon closure
                 if reach in self.final_states:
@@ -22,7 +35,6 @@ class NFA():
                         if item not in newNFA.transition_table[state][symbol]:
                             newNFA.transition_table[state][symbol].append(item)
             del newNFA.transition_table[state]["e"]
-
         
         return newNFA
 
@@ -40,3 +52,29 @@ class NFA():
             if item in self.final_states:
                 return True
         return False
+
+    def reachable(self, state): # Determines if this state is reachable from any other state
+        for other in self.transition_table: # for each state
+            for symbol in self.symbols: # for each symbol
+                if state in self.transition_table[other][symbol]: # is the current state in this secondary state + current symbol's closure?
+                    return True
+        return False
+
+    def outwards(self, state):
+        for symbol in self.symbols:
+            if self.transition_table[state][symbol] != []:
+                return True
+        
+        return False
+
+    def delete_states(self):
+        invalid = []
+        for state in self.states:
+            if not self.reachable(state) and state != self.start_state:
+                invalid.append(state)
+
+        for state in invalid:
+            del self.transition_table[state]
+
+        return self
+
