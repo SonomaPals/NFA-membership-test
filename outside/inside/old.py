@@ -216,16 +216,19 @@ def checkNextTreeLevel(copyOfTree):
             foundEndOfTree(copyOfTree,copyOfTree.type)
         if (copyOfTree.type == 4) and (boolForKleene == 0):
             kleeneStarForSingleStar(copyOfTree, finalStateList,startingStatesList)
-    if copyOfTree.left.checked == 0:
-        checkNextTreeLevel(copyOfTree.left)
-    if copyOfTree.left.checked == 1: #Check if the CHILD was completed 
-        if copyOfTree.type == 2:
-            concatTable(copyOfTree)
-        if (copyOfTree.type == 4) and (boolForKleene == 0):
-            kleeneStarForSingleStar(copyOfTree, finalStateList,startingStatesList)
-            #kleeneStar(copyOfTree,finalStateList)
-        if copyOfTree.type == 3:
-            nextNodeUp(copyOfTree,copyOfTree.type)
+    if copyOfTree.type == 1:
+        pass
+    else:
+        if copyOfTree.left.checked == 0:
+            checkNextTreeLevel(copyOfTree.left)
+        if copyOfTree.left.checked == 1: #Check if the CHILD was completed 
+            if copyOfTree.type == 2:
+                concatTable(copyOfTree)
+            if (copyOfTree.type == 4) and (boolForKleene == 0):
+                kleeneStarForSingleStar(copyOfTree, finalStateList,startingStatesList)
+                #kleeneStar(copyOfTree,finalStateList)
+            if copyOfTree.type == 3:
+                nextNodeUp(copyOfTree,copyOfTree.type)
 
 def unionAlreadyCheckedHelper(et):
     global curStartState
@@ -307,10 +310,10 @@ def kleeneStarSingleHeleper(et):
     #     print("test")
     
 def checkIfParentHasSameType(expression_Tree_copy2):
-    while (expression_Tree_copy2.left != None):
+    x= None
+    while (expression_Tree_copy2.left.left != x):
         if expression_Tree_copy2.left.type == 4:
             return 1
-    return 0
         
 def foundEndOfTree(et, Parentstype):
     if (Parentstype == 2):
@@ -328,8 +331,8 @@ def foundEndOfTree(et, Parentstype):
     if (Parentstype == 4):
         if (et.right == None):
             kleeneStarSingleHeleper(et) # a*
-            # if (checkIfParentHasSameType(expression_Tree_copy2) == 1):
-                # setterForNextLevel()
+            if (checkIfParentHasSameType(expression_Tree_copy2) == 1):
+                setterForNextLevel()
         else:
             kleeneStar(et,finalStateList)  #((a+b)c)* 
 
@@ -550,7 +553,7 @@ def main2(inp):
     transformTTable(Dict)
     return 0
 
-usrInput = "a*+b"
+usrInput = "(b+a)*"
 #usrInput = sys.argv[1]
 main2(usrInput)
 
