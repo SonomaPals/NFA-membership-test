@@ -3,7 +3,7 @@
 # Spring 2022
 
 import outside.inside.eFreeNFA as eFreeNFA # Import Katie's knfa.py file --> uses convert_nfa function
-import outside.inside.genfa as eNFA
+# import outside.inside.genfa as eNFA
 
 # for every character in the input
 # current state on this input gives --> _______
@@ -12,8 +12,6 @@ def test2(string, nfa):
   start = nfa.start_state
   for char in string:
     reachable = nfa.transition_table[start][char]
-
-
 
 
 def test(string, nfa):
@@ -50,7 +48,7 @@ def main():
     num_states = len(transition_table)
     symbols = ['a', 'b']
 
-    M2 = eFreeNFA.NFA(num_states, symbols, transition_table, start_state, final_states).remove_epsilons() # One extra symbol for epsilon
+    M2 = eFreeNFA.NFA([num_states, symbols, transition_table, start_state, final_states]).remove_epsilons() # One extra symbol for epsilon
 
     # print(goal)
     # print(M2.transition_table)
