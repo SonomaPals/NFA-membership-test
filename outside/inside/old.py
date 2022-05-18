@@ -160,10 +160,10 @@ def kleeneStar(copyOfTree,finalStateList):
         finalStateList.append(len(Dict)-2)
         officialStartState = len(Dict) - 1
         newDict = {}
-        newDict['e'] = officialStartState
+        newDict['e'] = list(officialStartState)
         Dict[finalStateList[0]] = newDict
         newDict2 = {}
-        newDict2['e'] = startingStatesList[0]
+        newDict2['e'] = list(startingStatesList[0])
         Dict[officialStartState] = newDict2
         copyOfTree.checked = 1
         oldFinal1 = finalStateList.pop() 
@@ -172,8 +172,8 @@ def kleeneStar(copyOfTree,finalStateList):
         newDict4 = {}
         finalStateList.pop()
         finalStateList.append(len(Dict)-1)
-        newDict3['e'] = finalStateList[0]
-        newDict4['e'] = finalStateList[0]
+        newDict3['e'] = list(finalStateList[0])
+        newDict4['e'] = list(finalStateList[0])
         Dict[oldFinal1] = newDict3
         Dict[oldFinal2] = newDict4
     else:    #Plus sign never onto of concat or star #((a+b)c)*
@@ -183,10 +183,10 @@ def kleeneStar(copyOfTree,finalStateList):
         finalStateList.append(len(Dict)-1)
         officialStartState = len(Dict) - 1
         newDict = {}
-        newDict['e'] = officialStartState
+        newDict['e'] = list(officialStartState)
         Dict[finalStateList[0]] = newDict
         newDict2 = {}
-        newDict2['e'] = startingStatesList[0]
+        newDict2['e'] = list(startingStatesList[0])
         Dict[officialStartState] = newDict2
         copyOfTree.checked = 1
     #print(officialStartState) Start
@@ -289,12 +289,16 @@ def kleeneStarSingleHeleper(et):
         Dict[startState] = nestedDict
         #Add New State for epsilon transition
         nestedDict2 = {}
-        nestedDict2['e'] = startState
+        temp = startState
+        int(temp)
+        nestedDict2['e'] = [temp]
         Dict[startState+2] = nestedDict2
         #Add Epsilon from State old final State to new Start State
-        startState = startState + 2
+        startState += 2
         nestedDict3 = {}
-        nestedDict3['e'] = startState
+        temp2 = startState
+        int(temp2)
+        nestedDict3['e'] = [temp2]
         Dict[startState-1] = nestedDict3
         finalStateList.append(startState+2) #Update Final State 
         startingStatesList.pop(0) #Pop old starting State to the list
@@ -302,6 +306,12 @@ def kleeneStarSingleHeleper(et):
     # if et.left.type == 1 and et.right != None:
     #     print("test")
     
+def checkIfParentHasSameType(expression_Tree_copy2):
+    while (expression_Tree_copy2.left != None):
+        if expression_Tree_copy2.left.type == 4:
+            return 1
+    return 0
+        
 def foundEndOfTree(et, Parentstype):
     if (Parentstype == 2):
         if (et.left.type == 1 and et.right.type == 1):  #ab (Single tree, just CONCAT )#Symbols on left and right. No Children beyond single tree 3 nodes.
@@ -318,6 +328,8 @@ def foundEndOfTree(et, Parentstype):
     if (Parentstype == 4):
         if (et.right == None):
             kleeneStarSingleHeleper(et) # a*
+            # if (checkIfParentHasSameType(expression_Tree_copy2) == 1):
+                # setterForNextLevel()
         else:
             kleeneStar(et,finalStateList)  #((a+b)c)* 
 
@@ -497,7 +509,7 @@ class genfa:
 
 
 def transformTTable(Dict):
-    #print(Dict)
+    print(Dict)
     symbolsPlusEpsilon = symbols
     symbolsPlusEpsilon.append("e")
     for x in symbolsPlusEpsilon:
@@ -505,8 +517,7 @@ def transformTTable(Dict):
             r = Dict[y].get(x, None)
             if r == None:
                 Dict[y][x] = []
-    print(printInfo(Dict))
-    #print(Dict)
+    #print(printInfo(Dict))
 
 def main2(inp):
     global currentState
@@ -539,8 +550,8 @@ def main2(inp):
     transformTTable(Dict)
     return 0
 
-#usrInput = sys.argv[1]
 usrInput = "a*+b"
+#usrInput = sys.argv[1]
 main2(usrInput)
 
 
