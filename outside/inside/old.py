@@ -17,7 +17,7 @@
 # epsilon transition to the previous start state from the new state
 # epsilon transiton from the previous final state to the new state
 # (Note: New state becomes a final state and start state)
-import sys
+import sys #Used to take in input as a file arg
 
 class Type:
     SYMBOL = 1
@@ -192,18 +192,57 @@ def kleeneStar(copyOfTree,finalStateList):
     #print(officialStartState) Start
     #print(finalStateList) Final State
     
-def setterForNextLevel():
+def setterForNextLevel(): #Creates a fresh copy of a tree
     global expression_Tree_copy
     copyOfTree = expression_Tree_copy
     if copyOfTree.left.left != None:
         checkNextTreeLevel(copyOfTree)
-    
+
+def unionOfRightTreeHelper(newInitial): #For something in the form: (a+b)+(c+d)
+    Dict[newInitial+1] = {}
+    newDict = {}
+    newList = []
+    for x in startingStatesList:
+        newList.append(x)
+    newDict['e'] = newList
+    Dict[newInitial+1] = newDict
+
+def unionOfRightTree(copyOfTree): #coming from a parent tree with left checked (nextNodeUp)| For something in the form: (a+b)+(c+d)
+    if copyOfTree.left.type == 1 and copyOfTree.right.type == 1: #We are in a right subtree with children as 2 symbols
+        newStartingState = int(startingStatesList[0])+1 #new start start will be 1 after the last one
+        Dict[newStartingState][copyOfTree.left.value] = startingStatesList[0]+2 #Create a
+        poppedLeftInitial = startingStatesList.pop()
+        startingStatesList.append(newStartingState)
+        Dict[newStartingState+2][copyOfTree.right.value] = newStartingState + 3 #Create b
+        startingStatesList.append(newStartingState+2)
+        finalStateList.append(newStartingState+1)
+        finalStateList.append(newStartingState+3)
+        newDict = {}
+        newList = []
+        for x in startingStatesList:
+            newList.append(x)
+        newDict['e'] = newList
+        Dict[newStartingState+3] = newDict
+        #Now reset starting states
+        while len(startingStatesList) != 0:
+            startingStatesList.pop()
+        startingStatesList.append(poppedLeftInitial)
+        startingStatesList.append(newStartingState+3)
+        newInitial = newStartingState+3
+        unionOfRightTreeHelper(newInitial)
+ 
 def nextNodeUp(copyOfTree,type):
     if copyOfTree.left.checked == 1:
         if copyOfTree.right.type == 1:
             unionTable(copyOfTree)
             unionAlreadyCheckedHelper(copyOfTree) #Comes after unionTable or start State will be changed
-
+        if copyOfTree.right.type == 2:
+            print("nextNodeUp: CONCAT")
+        if copyOfTree.right.type == 3:
+            #print("nextNodeUp: UNION")
+            unionOfRightTree(copyOfTree.right)
+        #4 Star?
+          
 def checkNextTreeLevel(copyOfTree):
     global boolForKleene 
     global w
@@ -370,24 +409,6 @@ def recusriveExpressionTreeOrder(et):
     # if not et.left:
     #     print("empty")   
         
-
-def print_tree(et):
-    if et.type == Type.SYMBOL:
-        # evaluate symbol: it is going to create a nfa for the symbol. ex. if symbol is a, then it will create a nfa for a. 
-        regexListInOrder.append(et.value)
-    elif et.type == Type.CONCAT:
-        print_tree(et.left)
-        regexListInOrder.append(".")
-        print_tree(et.right)
-    elif et.type == Type.UNION:
-        print_tree(et.left)
-        regexListInOrder.append("+")
-        print_tree(et.right)
-    elif et.type == Type.STAR:
-        print_tree(et.left)
-        regexListInOrder.append("*")
-    
-
 def create_tree(regex_string):
     stack = []
     for char in regex_string:
@@ -541,7 +562,7 @@ def main2(inp):
     regex = prepare_regex(userInput) # return a postfix string
     #print(regex)
     expression_Tree = create_tree(regex)
-    print_tree(expression_Tree)
+    #print_tree(expression_Tree)
     newobject.parse(regex)
     #print(regexListInOrder)
     readTree(expression_Tree)
@@ -553,8 +574,8 @@ def main2(inp):
     transformTTable(Dict)
     return 0
 
-usrInput = "(b+a)*"
-#usrInput = sys.argv[1]
+# usrInput = "(a+b)+(c+d)"
+usrInput = sys.argv[1]
 main2(usrInput)
 
 
