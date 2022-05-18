@@ -17,7 +17,7 @@
 # epsilon transition to the previous start state from the new state
 # epsilon transiton from the previous final state to the new state
 # (Note: New state becomes a final state and start state)
-
+import sys
 
 class Type:
     SYMBOL = 1
@@ -122,7 +122,6 @@ def concatTable(copyOfTree):
         FirstStateAdded = (w * 2)-1
         Dict[(w * 2)] = {} 
         poppedList = []
-        copyOfTree.right.checked = 1
         while (len(finalStateList) != 0):
             poppedList.append(finalStateList.pop())
         finalStateList.append((w * 2))
@@ -205,63 +204,12 @@ def nextNodeUp(copyOfTree,type):
             unionTable(copyOfTree)
             unionAlreadyCheckedHelper(copyOfTree) #Comes after unionTable or start State will be changed
 
-# def checkNextTreeLevel(copyOfTree):
-#     global boolForKleene 
-#     global w
-#     boolForKleene = 0
-#     if w == 2:
-#         if copyOfTree.right.checked == 0 and copyOfTree.left.checked == 0  and copyOfTree.type == 2:
-#             foundEndOfTree(copyOfTree,copyOfTree.type)
-#         if copyOfTree.right.checked == 0 and copyOfTree.left.checked == 0 and copyOfTree.type == 3:
-#             foundEndOfTree(copyOfTree,copyOfTree.type)
-#         if copyOfTree.right.checked == 0 and copyOfTree.left.checked == 0  and (copyOfTree.type == 4) and (boolForKleene == 0):
-#             kleeneStarForSingleStar(copyOfTree, finalStateList,startingStatesList)
-#     if copyOfTree.left.checked == 0:
-#         checkNextTreeLevel(copyOfTree.left)
-#     if copyOfTree.left.checked == 1 and copyOfTree.right.checked == 0 : #Check if the CHILD was completed 
-#         if copyOfTree.type == 2:
-#             concatTable(copyOfTree)
-#         if (copyOfTree.type == 4) and (boolForKleene == 0):
-#             kleeneStarForSingleStar(copyOfTree, finalStateList,startingStatesList)
-#             #kleeneStar(copyOfTree,finalStateList)
-#         if copyOfTree.type == 3:
-#             nextNodeUp(copyOfTree,copyOfTree.type)
-
-# def checkNextTreeLevel(copyOfTree):
-#     global boolForKleene 
-#     global w
-#     boolForKleene = 0
-#     if copyOfTree.left != None and copyOfTree.right == None: #If nothing is in the right tree but something is in the left we are at the top
-#         pass
-#     else:
-#         if copyOfTree.left.checked == 1 and copyOfTree.right.checked == 1:
-#             pass
-#         else:
-#             if w == 2:
-#                 if copyOfTree.type == 2:
-#                     foundEndOfTree(copyOfTree,copyOfTree.type)
-#                 if copyOfTree.type == 3:
-#                     foundEndOfTree(copyOfTree,copyOfTree.type)
-#                 if (copyOfTree.type == 4) and (boolForKleene == 0):
-#                     kleeneStarForSingleStar(copyOfTree, finalStateList,startingStatesList)
-#             if copyOfTree.left.checked == 0:
-#                 checkNextTreeLevel(copyOfTree.left)
-#             if copyOfTree.left.checked == 1: #Check if the CHILD was completed 
-#                 if copyOfTree.type == 2:
-#                     concatTable(copyOfTree)
-#                 if (copyOfTree.type == 4) and (boolForKleene == 0):
-#                     kleeneStarForSingleStar(copyOfTree, finalStateList,startingStatesList)
-#                     #kleeneStar(copyOfTree,finalStateList)
-#                 if copyOfTree.type == 3:
-#                     nextNodeUp(copyOfTree,copyOfTree.type)
-
 def checkNextTreeLevel(copyOfTree):
     global boolForKleene 
     global w
     boolForKleene = 0
+    #Checks next tree here
     if w == 2:
-        if copyOfTree.left.checked == 1 and copyOfTree.right.checked == 1:
-            pass
         if copyOfTree.type == 2:
             foundEndOfTree(copyOfTree,copyOfTree.type)
         if copyOfTree.type == 3:
@@ -301,7 +249,6 @@ def concatNoChildrenHelperEpsilon(copyOfTree,StartState): #Adding Epsilon for a 
     nestedDict['e'] = newList
     Dict[StartState+1] = nestedDict
     copyOfTree.checked = 1
-    checkNextTreeLevel(expression_Tree_copy2) #Pass in the fresh copy of the tree to find the next highest node.
     
 
 def helperForConcatNoChildren(copyOfTree): #If in a concat tree with children as symbols
@@ -327,8 +274,6 @@ def helperForConcatNoChildren(copyOfTree): #If in a concat tree with children as
             poppedList.append(finalStateList.pop())
         finalStateList.append(StartState+3)
         startingStatesList.pop(StartState+1)
-    copyOfTree.right.checked = 1
-    copyOfTree.left.checked = 1
     concatNoChildrenHelperEpsilon(copyOfTree,StartState)
     
 def kleeneStarSingleHeleper(et):
@@ -373,8 +318,6 @@ def foundEndOfTree(et, Parentstype):
     if (Parentstype == 4):
         if (et.right == None):
             kleeneStarSingleHeleper(et) # a*
-        if (et.left.type == 2): 
-            print("ab*")
         else:
             kleeneStar(et,finalStateList)  #((a+b)c)* 
 
@@ -501,6 +444,9 @@ def prepare_regex(regex_string):
 def readTree(et):
     return 0
 
+def printInfo(Dict):
+    return (h,symbols,Dict,startingStatesList[0],finalStateList)
+
 class genfa:
     def __init__(self,s):
         self.newlist = list(s)
@@ -540,8 +486,7 @@ class genfa:
         global w,h
         w, h = NumSymbols, numStates
         self.createTransitionTable(w,h,symbols)
-    
-    # def grabNextSymbol(regex,i):
+
     
     
     def parse(self,regex):
@@ -551,6 +496,17 @@ class genfa:
                     return 0
 
 
+def transformTTable(Dict):
+    #print(Dict)
+    symbolsPlusEpsilon = symbols
+    symbolsPlusEpsilon.append("e")
+    for x in symbolsPlusEpsilon:
+        for y in range(len(Dict)):
+            r = Dict[y].get(x, None)
+            if r == None:
+                Dict[y][x] = []
+    print(printInfo(Dict))
+    #print(Dict)
 
 def main2(inp):
     global currentState
@@ -563,26 +519,12 @@ def main2(inp):
     currentState = 0
     startingStatesList = []
     finalStateList = []
-
-    #---------
-    # Working Still
-    #---------
-    #((a+b)c)*
-    #a+b+c
-    #(a+b+c)*
-    #(ab)*
-    #a*
-    #a+b
-    
-    #ab
-    #printList = ["((a+b)c)*" ,"a+b+c","(a+b+c)*","(ab)*","a*","a+b","ab"]
-    #input = "ab"
-    theUserInput = inp
-    s = theUserInput
+    userInput = inp
+    s = userInput
     newobject = genfa(s)
     newobject.findSymbols()
     #print(newobject.lastParenIndexFinder())
-    regex = prepare_regex(theUserInput) # return a postfix string
+    regex = prepare_regex(userInput) # return a postfix string
     #print(regex)
     expression_Tree = create_tree(regex)
     print_tree(expression_Tree)
@@ -593,17 +535,12 @@ def main2(inp):
     expression_Tree_copy = expression_Tree
     expression_Tree_copy2 = expression_Tree
     expressionTreeOrder(expression_Tree)
-    
-    print("input is: ", theUserInput)
-    print(Dict)
+    print("input is: ", userInput)
+    transformTTable(Dict)
     return 0
 
-
-printList = ["((a+b)c)*" ,"a+b+c","(a+b+c)*","(ab)*","a*","a+b","ab"]
-for inp in printList:
-    main2(inp)
-    
-#main2()
-
+#usrInput = sys.argv[1]
+usrInput = "a*+b"
+main2(usrInput)
 
 
