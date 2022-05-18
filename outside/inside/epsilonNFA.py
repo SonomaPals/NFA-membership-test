@@ -566,7 +566,6 @@ def main2(inp):
     expression_Tree_copy2 = expression_Tree
     expressionTreeOrder(expression_Tree)
     print("input is: ", userInput)
-    print(finalStateList)
     transformTTable(Dict)
     return 0
 
