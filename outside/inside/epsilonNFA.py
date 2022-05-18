@@ -369,7 +369,7 @@ def kleeneStarSingleHeleper(curExpressionTree):
         int(temp2)
         nestedDict3['e'] = [temp2]
         Dict[startState-1] = nestedDict3
-        finalStateList.append(startState+2) #Update Final State 
+        finalStateList.append(len(Dict)-1) #Update Final State 
         startingStatesList.pop(0) #Pop old starting State to the list
         startingStatesList.append(startState) #Add new starting state to the list
     
@@ -570,7 +570,7 @@ def main2(inp):
     transformTTable(Dict)
     return 0
 
-usrInput = "((a+b)c)*"
+usrInput = "a*"
 #usrInput = sys.argv[1]
 main2(usrInput)
 
