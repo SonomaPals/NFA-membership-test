@@ -486,7 +486,6 @@ class genfa:
         for b in range(h):
             Dict[b] = {}
 
-    
     def lastParenIndexFinder(self):
         for x in range(len(self.newlist)):
             for j in range(len(self.newlist)):
@@ -528,7 +527,7 @@ def closureNfa(newDict):
                 if (len(newDict[y]['e']) > 0):
                     for item in Dict[y]['e']:
                         closureDict[x].append(item)
-    print(closureDict)
+    #print(closureDict)
 
 def printInfo(Dict): #Function to return info for E-Free NFA portion of the project.
     return (h,symbols,Dict,startingStatesList[0],finalStateList)
@@ -571,10 +570,9 @@ def regextoNFA(inp):
     expressionTreeOrder(expression_Tree)
     print("input is: ", userInput)
     transformTTable(Dict)
-
     return 0
 
-usrInput = "a*"
+usrInput = "((a+b)c)*"
 #usrInput = sys.argv[1]
 regextoNFA(usrInput)
 
