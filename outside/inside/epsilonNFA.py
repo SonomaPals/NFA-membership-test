@@ -1,54 +1,38 @@
 # epsilonNFA file for CS 454 Final Project
 # Garret Mook, Katie Pell, Jorge Calderon
 # Spring 2022
-
-# Algorithms that we are implementing
 #---------------------
+import sys #Used to take in input as a file arg
+
 # Union = "+"
 # +1 to numStates
 # epsilon to start states of symbols between the "+" sign
-
-# Concatenation = "."
-# left side of "." symbol grab the final state
-# right side of "." symbol grab the initain state
-# set a epsilon transition from the final state of the left to the initial state of the right
-# Note: There can be more than 1 symbols on either side, i.e. (a+b).c
-
-# Star = "*"
-# +1 to numStates
-# epsilon transition to the previous start state from the new state
-# epsilon transiton from the previous final state to the new state
-# (Note: New state becomes a final state and start state)
-#---------------------
-import sys
-from tracemalloc import start #Used to take in input as a file arg
-        
 def UnionEndOfTreeHelper(curExpressionTree): 
-        global currentState #Re-tell python to use global version
-        #----
-        #Side left
-        #----  
-        left = {}
-        transitionListleft = []
-        x = curExpressionTree.left.value #Will be key of nested dictionary
-        left[x] = transitionListleft #nestedDictionary
-        Dict[currentState] = left #inserting the dict 'a' into the dict
-        left[x] += [currentState+1]
-        startingStatesList.append(currentState)
-        finalStateList.append(currentState+1)
-        #----
-        #Side right
-        #----
-        currentState = 2 + currentState 
-        right = {}
-        transitionListright = []
-        y = curExpressionTree.right.value
-        right[y] = transitionListright
-        Dict[currentState] = right #inserting the dict 'a' into the dict
-        right[y] += [currentState+1]
-        startingStatesList.append(currentState)
-        finalStateList.append(currentState+1)
-        addEpsilon(currentState+2)
+    global currentState #Re-tell python to use global version
+    #----
+    #Side left
+    #----  
+    left = {}
+    transitionListleft = []
+    x = curExpressionTree.left.value #Will be key of nested dictionary
+    left[x] = transitionListleft #nestedDictionary
+    Dict[currentState] = left #inserting the dict 'a' into the dict
+    left[x] += [currentState+1]
+    startingStatesList.append(currentState)
+    finalStateList.append(currentState+1)
+    #----
+    #Side right
+    #----
+    currentState = 2 + currentState 
+    right = {}
+    transitionListright = []
+    y = curExpressionTree.right.value
+    right[y] = transitionListright
+    Dict[currentState] = right #inserting the dict 'a' into the dict
+    right[y] += [currentState+1]
+    startingStatesList.append(currentState)
+    finalStateList.append(currentState+1)
+    addEpsilon(currentState+2)
 
 def addEpsilon(NextState):
     global nestedEpsilon
@@ -74,7 +58,11 @@ def unionTable(curExpressionTree):
         newList.append((curStartState + 1))
         Dict[startingStatesList[0]]['e'] += newList
 
-
+# Concatenation = "."
+# left side of "." symbol grab the final state
+# right side of "." symbol grab the initain state
+# set a epsilon transition from the final state of the left to the initial state of the right
+# Note: There can be more than 1 symbols on either side, i.e. (a+b).c
 def concatEpsilonToMultipleStartStates(copyOfTree,FirstStateAdded,poppedList):
     #Epsilon transition to the NEW start state from the previous FINAL states
     copyOfTree.checked = 1 #Sets the concat to be CHECKED as completed
@@ -138,7 +126,12 @@ def kleeneStarForSingleStar(copyOfTree,finalStateList,startStateList):
             newList.append(y)
             Dict[x]['e'] = newList
     finalStateList.append(len(Dict)-1)
-    
+
+# Star = "*"
+# +1 to numStates
+# epsilon transition to the previous start state from the new state
+# epsilon transiton from the previous final state to the new state
+# (Note: New state becomes a final state and start state)
 def kleeneStar(copyOfTree,finalStateList):
     global boolForKleene #QUICK FIX: Adding BOOLEAN so if (copyOfTree.type == 4) and (boolForKleene == 0): doesnt run TWICE
     global officialStartState
@@ -178,8 +171,6 @@ def kleeneStar(copyOfTree,finalStateList):
         newDict2['e'] = list(startingStatesList[0])
         Dict[officialStartState] = newDict2
         copyOfTree.checked = 1
-    #print(officialStartState) Start
-    #print(finalStateList) Final State
     
 def setterForNextLevel(): #Creates a fresh copy of a tree
     global expression_Tree_copy
@@ -247,7 +238,6 @@ def helperForLeftCheckedConcatRight(copyOfTree):
     startingStatesList.append(newStartStateVal)
     unionOfRightTreeHelper(newFinalStateVal+1)
     
-
 def nextNodeUp(copyOfTree,type):
     if copyOfTree.left.checked == 1:
         if copyOfTree.right.type == 1:
@@ -311,9 +301,6 @@ def concatNoChildrenHelperEpsilon(copyOfTree,StartState): #Adding Epsilon for a 
     setterForNextLevel()
     #Check if parent of not
     
-    
-    
-
 def helperForConcatNoChildren(copyOfTree): #If in a concat tree with children as symbols
     global w
     StartState = 0
@@ -486,9 +473,6 @@ def parseRegexIntoList(regex_string):
     regex_string = temp
     return orderEvalUsingPostFix(regex_string)
 
-def printInfo(Dict): #Function to return info for E-Free NFA portion of the project.
-    return (h,symbols,Dict,startingStatesList[0],finalStateList)
-
 class genfa:
     def __init__(self,s):
         self.newlist = list(s)
@@ -533,6 +517,22 @@ class genfa:
                 if str(regex[i+1]).isalpha():
                     return 0
 
+def closureNfa(newDict):
+    closureDict = {}
+    for x in range(0,len(newDict)):
+        closureDict[x] = []
+        closureDict[x].append(x)
+        for y in range(0,len(newDict)):
+            if y in newDict[x]['e']: #Adds transitions on epsilon to closure
+                closureDict[x].append(y)
+                if (len(newDict[y]['e']) > 0):
+                    for item in Dict[y]['e']:
+                        closureDict[x].append(item)
+    print(closureDict)
+
+def printInfo(Dict): #Function to return info for E-Free NFA portion of the project.
+    return (h,symbols,Dict,startingStatesList[0],finalStateList)
+                               
 def transformTTable(Dict):
     print(Dict)
     symbolsPlusEpsilon = symbols
@@ -542,9 +542,13 @@ def transformTTable(Dict):
             r = Dict[y].get(x, None)
             if r == None:
                 Dict[y][x] = []
-    #print(printInfo(Dict)) #Print in the form needed to do E-Free NFA
+    closureNfa(printInfo(Dict)[2]) #Print in the form needed to do E-Free NFA
+    return Dict #Form ready for E-Free NFA 
 
-def main2(inp):
+def DictReturn():
+    return Dict
+
+def regextoNFA(inp):
     global currentState
     global startingStatesList
     global regexListInOrder
@@ -567,10 +571,11 @@ def main2(inp):
     expressionTreeOrder(expression_Tree)
     print("input is: ", userInput)
     transformTTable(Dict)
+
     return 0
 
 usrInput = "a*"
 #usrInput = sys.argv[1]
-main2(usrInput)
+regextoNFA(usrInput)
 
 
