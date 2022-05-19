@@ -111,7 +111,7 @@ def test1():
 
 def regex_to_epsilonNFA(userInput):
     # usrInput = "ab" # Get user input
-    x = reNFA.printInfo(reNFA.regexToNFA(userInput)) # G/J code to go from regex to epsilon-NFA --> returns tuple of NFA definition
+    x = reNFA.printInfo(reNFA.regextoNFA(userInput)) # G/J code to go from regex to epsilon-NFA --> returns tuple of NFA definition
     # print(x)
     return efNFA.NFA(x) # Return the NFA object corresponding to this userInput
 
@@ -120,28 +120,93 @@ def epsilonNFA_to_epsilonFreeNFA(M1):
     mid = mid.delete_states() # Remove any unnecessary states
     return mid
 
-def main():
-    usrInput = "a+b" # regex
-    M1 = regex_to_epsilonNFA(usrInput) #  create epsilon NFA
-    M2 = epsilonNFA_to_epsilonFreeNFA(M1) # creates epsilon-free NFA
 
-    M1.print()
-
-    print()
-    # testA = ["bcacbcacbcacacacacbcbcbcbcacacbc", "acacbcacacacacacacbcbcbc", "acacacbc", "aaaabbbbc", "abc"] # First 3 should pass, last 2 should fail
+def mainHelper(M1,M2):
+    print("------------------------------------")
+    print("Next: Here is the BOOLEAN for if the RegEx string is accepted or not by the Epilson Free NFA")
     testA = ["a", "b", "ab", "abb", ""]
     for string in testA:
         print(M2.check_string(string))
+    print("------------------------------------")
+        
+def main(inp):
+    usrInput = inp # regex
+    M1 = regex_to_epsilonNFA(usrInput) #  create epsilon NFA
+    M2 = epsilonNFA_to_epsilonFreeNFA(M1) # creates epsilon-free NFA
+    #result = M2.check_string(inp)
+    #print(result)
+    # testA = ["bcacbcacbcacacacacbcbcbcbcacacbc", "acacbcacacacacacacbcbcbc", "acacacbc", "aaaabbbbc", "abc"] # First 3 should pass, last 2 should fail
+    return M1,M2
+
+def main2(inp):
+    M1 = regex_to_epsilonNFA(inp) #  create epsilon NFA
+    M2 = epsilonNFA_to_epsilonFreeNFA(M1) # creates epsilon-free NFA
+    mainHelper(M1,M2)
+    M2.print()
 
     
-main()
+def driver():
+    print("Option 1: Run RegEx to Epsilon-NFA")
+    print("Option 2: Epsilon-NFA to Epsilon-Free NFA, and RegEx NFA String Membership Test")
+    print("Option 3: Exit")
+    print("***********************************")
+    inp = int(input("TYPE AN OPTION AND PRESS ENTER: "))
+    print("***********************************")
+    if (inp == 1):
+        print("Select a RegEx string to conver to a Epsilon-NFA")
+        print("1. a+b")
+        print("2. ab")
+        print("3. ((a+b)c)*")
+        print("4. a+b+c")
+        print("5. a+b")
+        print("6. a*")
+        print("7. (ab)*")
+        print("8. (b+a)*")
+        print("***********************************")
+        inp2 = int(input("TYPE AN OPTION AND PRESS ENTER: "))
+        print("***********************************")
+        print("")
+        if(inp2 == 1):
+            main("a+b")[0]         #Printing M1 from Main
+        if(inp2 == 2):
+            main("ab")[0]
+        if(inp2 == 3):
+            main("((a+b)c)*")[0]
+        if(inp2 == 4):
+            main("a+b+c")[0]
+        if(inp2 == 5):
+            main("ab")[0]
+        if(inp2 == 6):
+            main("a*")[0]
+        if(inp2 == 7):
+            main("(ab)*")[0]
+        if(inp2 == 8):
+            main("(b+a)*")[0]
+        print("")
+        print("------------------------------------")
+        print("Restarting....")
+        print("")
+        driver()
+    if (inp == 2):
+        print("Select a RegEx string to conver to a Epsilon-NFA")
+        print("1. a+b")
+        print("2. ab")
+        print("3. (a+b+c)")
+        print("***********************************")
+        inp3 = int(input("TYPE AN OPTION AND PRESS ENTER: "))
+        print("***********************************")
+        if inp3 == 1:
+            main2("a+b")
+        if inp3 == 2:
+            main2("ab")
+        if inp3 == 3:
+            main2("(a+b+c)")  
+        print("")
+        print("------------------------------------")
+        print("Restarting....")
+        print("")
+        driver()
+    if (inp == 3):
+        return 0
 
-# python old.py "ab"
-# python old.py "a+b"
-# python old.py "((a+b)c)*"
-# python old.py "a+b+c"
-# python old.py "a+b"
-# python old.py "a*"
-# python old.py "(ab)*"
-# python old.py "(b+a)*"
-# python old.py "(a+b)+(c+d)"
+driver()

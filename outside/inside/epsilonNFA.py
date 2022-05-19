@@ -1,53 +1,38 @@
 # epsilonNFA file for CS 454 Final Project
 # Garret Mook, Katie Pell, Jorge Calderon
 # Spring 2022
-
-# Algorithms that we are implementing
 #---------------------
+import sys #Used to take in input as a file arg
+
 # Union = "+"
 # +1 to numStates
 # epsilon to start states of symbols between the "+" sign
-
-# Concatenation = "."
-# left side of "." symbol grab the final state
-# right side of "." symbol grab the initain state
-# set a epsilon transition from the final state of the left to the initial state of the right
-# Note: There can be more than 1 symbols on either side, i.e. (a+b).c
-
-# Star = "*"
-# +1 to numStates
-# epsilon transition to the previous start state from the new state
-# epsilon transiton from the previous final state to the new state
-# (Note: New state becomes a final state and start state)
-#---------------------
-import sys #Used to take in input as a file arg
-        
-def UnionEndOfTreeHelper(et): 
-        global currentState #Re-tell python to use global version
-        #----
-        #Side left
-        #----  
-        left = {}
-        transitionListleft = []
-        x = et.left.value #Will be key of nested dictionary
-        left[x] = transitionListleft #nestedDictionary
-        Dict[currentState] = left #inserting the dict 'a' into the dict
-        left[x] += [currentState+1]
-        startingStatesList.append(currentState)
-        finalStateList.append(currentState+1)
-        #----
-        #Side right
-        #----
-        currentState = 2 + currentState 
-        right = {}
-        transitionListright = []
-        y = et.right.value
-        right[y] = transitionListright
-        Dict[currentState] = right #inserting the dict 'a' into the dict
-        right[y] += [currentState+1]
-        startingStatesList.append(currentState)
-        finalStateList.append(currentState+1)
-        addEpsilon(currentState+2)
+def UnionEndOfTreeHelper(curExpressionTree): 
+    global currentState #Re-tell python to use global version
+    #----
+    #Side left
+    #----  
+    left = {}
+    transitionListleft = []
+    x = curExpressionTree.left.value #Will be key of nested dictionary
+    left[x] = transitionListleft #nestedDictionary
+    Dict[currentState] = left #inserting the dict 'a' into the dict
+    left[x] += [currentState+1]
+    startingStatesList.append(currentState)
+    finalStateList.append(currentState+1)
+    #----
+    #Side right
+    #----
+    currentState = 2 + currentState 
+    right = {}
+    transitionListright = []
+    y = curExpressionTree.right.value
+    right[y] = transitionListright
+    Dict[currentState] = right #inserting the dict 'a' into the dict
+    right[y] += [currentState+1]
+    startingStatesList.append(currentState)
+    finalStateList.append(currentState+1)
+    addEpsilon(currentState+2)
 
 def addEpsilon(NextState):
     global nestedEpsilon
@@ -57,28 +42,28 @@ def addEpsilon(NextState):
     Dict[NextState] = nestedEpsilon 
     curStartState = NextState
     
-def unionTable(et):
+def unionTable(curExpressionTree):
     global newStartState
     global currentState
     global curStartState 
-    et.checked = 1
-    #et.right.checked = 1
-    if et.left.checked == 0:
+    curExpressionTree.checked = 1
+    if curExpressionTree.left.checked == 0:
         newStartState = (curStartState)
         Dict[curStartState]['e'] += startingStatesList
         while len(startingStatesList) != 0: #take previous start states off 
             startingStatesList.pop()
         startingStatesList.append(curStartState) #new state becomes start state
-    if et.left.checked == 1:
+    if curExpressionTree.left.checked == 1:
         newList = []
         newList.append((curStartState + 1))
         Dict[startingStatesList[0]]['e'] += newList
-    #finalStateList.append(len(Dict))
-    #print(Dict)
 
-
+# Concatenation = "."
+# left side of "." symbol grab the final state
+# right side of "." symbol grab the initain state
+# set a epsilon transition from the final state of the left to the initial state of the right
+# Note: There can be more than 1 symbols on either side, i.e. (a+b).c
 def concatEpsilonToMultipleStartStates(copyOfTree,FirstStateAdded,poppedList):
-    #global expression_Tree_copy2
     #Epsilon transition to the NEW start state from the previous FINAL states
     copyOfTree.checked = 1 #Sets the concat to be CHECKED as completed
     for x in poppedList:
@@ -86,9 +71,6 @@ def concatEpsilonToMultipleStartStates(copyOfTree,FirstStateAdded,poppedList):
             nested = {}
             nested['e'] = [FirstStateAdded]
             Dict[x] = nested
-            
-    #checkNextTreeLevel(expression_Tree_copy2)
-    #print(finaleSateList,FirstStateAdded)
     setterForNextLevel()
     
 class TreeThatExpressesItself:
@@ -143,9 +125,14 @@ def kleeneStarForSingleStar(copyOfTree,finalStateList,startStateList):
         for y in startStateList:
             newList.append(y)
             Dict[x]['e'] = newList
-    
+    finalStateList.append(len(Dict)-1)
+
+# Star = "*"
+# +1 to numStates
+# epsilon transition to the previous start state from the new state
+# epsilon transiton from the previous final state to the new state
+# (Note: New state becomes a final state and start state)
 def kleeneStar(copyOfTree,finalStateList):
-    # Look into DYNAMICALLY CREATING LISTS python
     global boolForKleene #QUICK FIX: Adding BOOLEAN so if (copyOfTree.type == 4) and (boolForKleene == 0): doesnt run TWICE
     global officialStartState
     if (regexListInOrder[len(regexListInOrder)-1] == '*') and (copyOfTree.left != None) and (copyOfTree.left.type == 3): #(a+b+c)*
@@ -184,8 +171,6 @@ def kleeneStar(copyOfTree,finalStateList):
         newDict2['e'] = list(startingStatesList[0])
         Dict[officialStartState] = newDict2
         copyOfTree.checked = 1
-    #print(officialStartState) Start
-    #print(finalStateList) Final State
     
 def setterForNextLevel(): #Creates a fresh copy of a tree
     global expression_Tree_copy
@@ -201,6 +186,9 @@ def unionOfRightTreeHelper(newInitial): #For something in the form: (a+b)+(c+d)
         newList.append(x)
     newDict['e'] = newList
     Dict[newInitial+1] = newDict
+    while len(startingStatesList) != 0:
+        startingStatesList.pop()
+    startingStatesList.append(newInitial+1)
 
 def unionOfRightTree(copyOfTree): #coming from a parent tree with left checked (nextNodeUp)| For something in the form: (a+b)+(c+d)
     if copyOfTree.left.type == 1 and copyOfTree.right.type == 1: #We are in a right subtree with children as 2 symbols
@@ -225,14 +213,38 @@ def unionOfRightTree(copyOfTree): #coming from a parent tree with left checked (
         startingStatesList.append(newStartingState+3)
         newInitial = newStartingState+3
         unionOfRightTreeHelper(newInitial)
- 
+
+def helperForLeftCheckedConcatRight(copyOfTree):
+    newDict = {}
+    newList = []
+    newDict2 = {}
+    newList2 = []
+    newDict3 = {}
+    newList3 = []
+    #Do the left side of the subtree
+    newStartStateVal = finalStateList[0] + 1
+    newFinalStateVal = finalStateList[0] + 3
+    finalStateList.append(newFinalStateVal+1)
+    newList.append(newStartStateVal+1)
+    newDict[copyOfTree.left.value] = newList
+    Dict[newStartStateVal] = newDict
+    #Do the right side of the subtree
+    newList2.append(newFinalStateVal+1)
+    newDict2[copyOfTree.right.value] = newList2
+    Dict[newFinalStateVal] = newDict2
+    newList3.append(newFinalStateVal)
+    newDict3['e'] = newList3
+    Dict[newFinalStateVal-1] = newDict3
+    startingStatesList.append(newStartStateVal)
+    unionOfRightTreeHelper(newFinalStateVal+1)
+    
 def nextNodeUp(copyOfTree,type):
     if copyOfTree.left.checked == 1:
         if copyOfTree.right.type == 1:
             unionTable(copyOfTree)
             unionAlreadyCheckedHelper(copyOfTree) #Comes after unionTable or start State will be changed
-        if copyOfTree.right.type == 2:
-            print("nextNodeUp: CONCAT")
+        if copyOfTree.right.type == 2: #If left is checked, parent is union, and right is CONCAT i.e. (ab)+(cd)
+            helperForLeftCheckedConcatRight(copyOfTree.right)
         if copyOfTree.right.type == 3:
             #print("nextNodeUp: UNION")
             unionOfRightTree(copyOfTree.right)
@@ -264,16 +276,16 @@ def checkNextTreeLevel(copyOfTree):
             if copyOfTree.type == 3:
                 nextNodeUp(copyOfTree,copyOfTree.type)
 
-def unionAlreadyCheckedHelper(et):
+def unionAlreadyCheckedHelper(existingExpresssionTree):
     global curStartState
-    if et.right.checked == 0: #Check if dealing wiht a unchecked right side
-        if et.right.type == 1: #Check if dealing with one symbol in right subtree
+    if existingExpresssionTree.right.checked == 0: #Check if dealing wiht a unchecked right side
+        if existingExpresssionTree.right.type == 1: #Check if dealing with one symbol in right subtree
             nestedDict = {}
             newList =  []
             newList.append(w*2)
-            nestedDict[et.right.value] = newList
+            nestedDict[existingExpresssionTree.right.value] = newList
             Dict[w+2] = nestedDict
-            et.checked = 1
+            existingExpresssionTree.checked = 1
             Dict[len(Dict)] = {}
             curStartState = len(Dict)
             finalStateList.append(w*2)
@@ -286,8 +298,9 @@ def concatNoChildrenHelperEpsilon(copyOfTree,StartState): #Adding Epsilon for a 
     nestedDict['e'] = newList
     Dict[StartState+1] = nestedDict
     copyOfTree.checked = 1
+    setterForNextLevel()
+    #Check if parent of not
     
-
 def helperForConcatNoChildren(copyOfTree): #If in a concat tree with children as symbols
     global w
     StartState = 0
@@ -319,16 +332,16 @@ class Classifiers:
     PLUSSIGN  = 3
     STAR = 4
  
-def kleeneStarSingleHeleper(et):
+def kleeneStarSingleHeleper(curExpressionTree):
     startState = 0
     finalStateList.append(startState+1)
-    if et.right == None:
+    if curExpressionTree.right == None:
         #Put in a state for the single symbol
         startingStatesList.append(startState)
         nestedDict = {}
         newList = []
         newList.append(startingStatesList[0] + 1)
-        nestedDict[et.left.value] = newList
+        nestedDict[curExpressionTree.left.value] = newList
         Dict[startState] = nestedDict
         #Add New State for epsilon transition
         nestedDict2 = {}
@@ -343,44 +356,36 @@ def kleeneStarSingleHeleper(et):
         int(temp2)
         nestedDict3['e'] = [temp2]
         Dict[startState-1] = nestedDict3
-        finalStateList.append(startState+2) #Update Final State 
+        finalStateList.append(len(Dict)-1) #Update Final State 
         startingStatesList.pop(0) #Pop old starting State to the list
         startingStatesList.append(startState) #Add new starting state to the list
-    # if et.left.type == 1 and et.right != None:
-    #     print("test")
     
 def checkIfParentHasSameType(expression_Tree_copy2):
     x= None
     while (expression_Tree_copy2.left.left != x):
         if expression_Tree_copy2.left.type == 4:
             return 1
-# The regular-expression operator star has the highest precedence and is left associative.
-# The regular-expression operator concatenation has the next highest precedence and is left associative.
-# The regular-expression operator + has the lowest precedence and is left associative.
-def orderOfEval(a, b):
-    order = ["+", ".", "*"]
-    return order.index(a) > order.index(b)
         
-def foundEndOfTree(et, Parentstype):
+def foundEndOfTree(curExpressionTree, Parentstype):
     if (Parentstype == 2):
-        if (et.left.type == 1 and et.right.type == 1):  #ab (Single tree, just CONCAT )#Symbols on left and right. No Children beyond single tree 3 nodes.
-            helperForConcatNoChildren(et)
+        if (curExpressionTree.left.type == 1 and curExpressionTree.right.type == 1):  #ab (Single tree, just CONCAT )#Symbols on left and right. No Children beyond single tree 3 nodes.
+            helperForConcatNoChildren(curExpressionTree)
         else:
-            concatTable(et)
+            concatTable(curExpressionTree)
     if (Parentstype == 3): # type 3 = '+' 
-        if et.left.checked == 1:
-            unionAlreadyCheckedHelper(et)
-        if et.checked == 0 and et.left.type == 1 and et.right.type == 1: # a + b (Single tree, just UNION)
-            UnionEndOfTreeHelper(et)
-            unionTable(et)
+        if curExpressionTree.left.checked == 1:
+            unionAlreadyCheckedHelper(curExpressionTree)
+        if curExpressionTree.checked == 0 and curExpressionTree.left.type == 1 and curExpressionTree.right.type == 1: # a + b (Single tree, just UNION)
+            UnionEndOfTreeHelper(curExpressionTree)
+            unionTable(curExpressionTree)
             setterForNextLevel()
-    if (Parentstype == 4):
-        if (et.right == None):
-            kleeneStarSingleHeleper(et) # a*
+    if (Parentstype == 4): #type 4 = "*"
+        if (curExpressionTree.right == None):
+            kleeneStarSingleHeleper(curExpressionTree) # a*
             if (checkIfParentHasSameType(expression_Tree_copy2) == 1):
                 setterForNextLevel()
         else:
-            kleeneStar(et,finalStateList)  #((a+b)c)* 
+            kleeneStar(curExpressionTree,finalStateList)  #((a+b)c)* 
 
 def checkLeft(etLeft):
     exists = 0
@@ -390,65 +395,68 @@ def checkLeft(etLeft):
         exists = 1
     return exists
 
-def expressionTreeOrder(et):
-    if checkLeft(et) == 1:
-        if checkLeft(et.left) == 0: #Check if nothing is in the left of the left (check if end of tree)
-            Parentstype = et.type
-            foundEndOfTree(et, Parentstype)
-        recusriveExpressionTreeOrder(et.left)
+def expressionTreeOrder(curExpressionTree):
+    if checkLeft(curExpressionTree) == 1:
+        if checkLeft(curExpressionTree.left) == 0: #Check if nothing is in the left of the left (check if end of tree)
+            Parentstype = curExpressionTree.type
+            foundEndOfTree(curExpressionTree, Parentstype)
+        recusriveExpressionTreeOrder(curExpressionTree.left)
         
-def recusriveExpressionTreeOrder(et):
-    if checkLeft(et) == 1:
-       expressionTreeOrder(et)
+def recusriveExpressionTreeOrder(curExpressionTree):
+    if checkLeft(curExpressionTree) == 1:
+       expressionTreeOrder(curExpressionTree)
 
 def creationOfExpressionTree(regex_string):
-    containerExpressionTreeCreationList = []
+    stack = []
     for char in regex_string:
         if char.isalnum():
-            containerExpressionTreeCreationList.append(TreeThatExpressesItself(Classifiers.LETTER, char))
+            stack.append(TreeThatExpressesItself(Classifiers.LETTER, char))
         else:
             if char == "+":
                 node = TreeThatExpressesItself(Classifiers.PLUSSIGN)
-                node.right = containerExpressionTreeCreationList.pop()
-                node.left = containerExpressionTreeCreationList.pop()
+                node.right = stack.pop()
+                node.left = stack.pop()
             elif char == ".":
                 node = TreeThatExpressesItself(Classifiers.PERIOD)
-                node.right = containerExpressionTreeCreationList.pop()
-                node.left = containerExpressionTreeCreationList.pop()
+                node.right = stack.pop()
+                node.left = stack.pop()
             elif char == "*":
                 node = TreeThatExpressesItself(Classifiers.STAR)
-                node.left = containerExpressionTreeCreationList.pop()
-            containerExpressionTreeCreationList.append(node)
-    return containerExpressionTreeCreationList[0]
+                node.left = stack.pop()
+            stack.append(node)
+    return stack[0]
 
+# The regular-expression operator star has the highest precedence and is left associative.
+# The regular-expression operator concatenation has the next highest precedence and is left associative.
+# The regular-expression operator + has the lowest precedence and is left associative.
+def orderOfEval(a, b):
+    order = ["+", ".", "*"]
+    return order.index(a) > order.index(b)
 
 def orderEvalUsingPostFix(regex_list):
     container = []
-    zero = 0
     words = ""
     for char in regex_list:
         if char.isalnum():
             words += char
             continue
-        if char == "(":
-            container.append(char)
-        elif char == ")":
-            container_len = len(container)
-            while container_len != zero and container[-1] != "(":
+        if char == ")":
+            while len(container) != 0 and container[-1] != "(":
                 words += container.pop()
             container.pop()
-        elif len(container) == zero or container[-1] == "(" or orderOfEval(char, container[-1]):
+        elif char == "(":
             container.append(char)
         elif char == "*":
             words = words + char
+        elif len(container) == 0 or container[-1] == "(" or orderOfEval(char, container[-1]):
+            container.append(char)
         else:
-            while len(container) != zero and container[-1] != "(" and not orderOfEval(char, container[-1]):
+            while len(container) != 0 and container[-1] != "(" and not orderOfEval(char, container[-1]):
                 words = words + container.pop()
             container.append(char)
-    containerLength = len(container)
-    while containerLength != zero:
+
+    while len(container) != 0:
         words = words + container.pop()
-        containerLength = containerLength - 1
     return words
 
 
@@ -465,9 +473,6 @@ def parseRegexIntoList(regex_string):
     regex_string = temp
     return orderEvalUsingPostFix(regex_string)
 
-def printInfo(Dict): #Function to return info for E-Free NFA portion of the project.
-    return (h,symbols,Dict,startingStatesList[0],finalStateList)
-
 class genfa:
     def __init__(self,s):
         self.newlist = list(s)
@@ -481,7 +486,6 @@ class genfa:
         for b in range(h):
             Dict[b] = {}
 
-    
     def lastParenIndexFinder(self):
         for x in range(len(self.newlist)):
             for j in range(len(self.newlist)):
@@ -501,7 +505,7 @@ class genfa:
             if str(self.newlist[x]).isalnum():
                 symbols.append(self.newlist[x])
                 NumSymbols += 1
-        numStates = NumSymbols * 2 #2 States 
+        numStates = NumSymbols * 2 #Each symbol is
         global w,h
         w, h = NumSymbols, numStates
         self.createTransitionTable(w,h,symbols)
@@ -512,8 +516,24 @@ class genfa:
                 if str(regex[i+1]).isalpha():
                     return 0
 
+def closureNfa(newDict):
+    closureDict = {}
+    for x in range(0,len(newDict)):
+        closureDict[x] = []
+        closureDict[x].append(x)
+        for y in range(0,len(newDict)):
+            if y in newDict[x]['e']: #Adds transitions on epsilon to closure
+                closureDict[x].append(y)
+                if (len(newDict[y]['e']) > 0):
+                    for item in Dict[y]['e']:
+                        closureDict[x].append(item)
+    #print(closureDict)
+
+def printInfo(Dict): #Function to return info for E-Free NFA portion of the project.
+    return (h,symbols,Dict,startingStatesList[0],finalStateList)
+                               
 def transformTTable(Dict):
-    # print(Dict)
+    print(Dict)
     symbolsPlusEpsilon = symbols
     symbolsPlusEpsilon.append("e")
     for x in symbolsPlusEpsilon:
@@ -521,9 +541,13 @@ def transformTTable(Dict):
             r = Dict[y].get(x, None)
             if r == None:
                 Dict[y][x] = []
-    #print(printInfo(Dict))
+    closureNfa(printInfo(Dict)[2]) #Print in the form needed to do E-Free NFA
+    return Dict #Form ready for E-Free NFA 
 
-def regexToNFA(inp):
+def DictReturn():
+    return Dict
+
+def regextoNFA(inp):
     global currentState
     global startingStatesList
     global regexListInOrder
@@ -538,19 +562,17 @@ def regexToNFA(inp):
     s = userInput
     newobject = genfa(s)
     newobject.findSymbols()
-    regex = parseRegexIntoList(userInput) # return a postfix string
+    regex = parseRegexIntoList(userInput) # return a postfix ordered string
     expression_Tree = creationOfExpressionTree(regex)
     newobject.parse(regex)
     expression_Tree_copy = expression_Tree
     expression_Tree_copy2 = expression_Tree
     expressionTreeOrder(expression_Tree)
-    # print("input is: ", userInput)
-    transformTTable(Dict)
-    return Dict
-    # return 0
+    print("input is: ", userInput)
+    return(transformTTable(Dict))
 
-#usrInput = "((a+b)c)*"
-# usrInput = sys.argv[1]
-# main2(usrInput)
+# usrInput = "((a+b)c)*"
+# #usrInput = sys.argv[1]
+# regextoNFA(usrInput)
 
 
